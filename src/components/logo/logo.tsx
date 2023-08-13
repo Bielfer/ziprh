@@ -1,5 +1,6 @@
-import clsx from 'clsx';
-import type { FC } from 'react';
+import Image from "next/image";
+import type { FC } from "react";
+import cn from "~/helpers/cn";
 
 type Props = {
   className?: string;
@@ -7,11 +8,22 @@ type Props = {
 
 const Logo: FC<Props> = ({ className }) => {
   return (
-    <img
-      className={clsx('h-8 w-auto', className)}
-      src="https://tailwindui.com/img/logos/mark.svg?color=primary&shade=600"
-      alt="Your Company"
-    />
+    <>
+      {/* <Image
+        className={cn("lg:hidden", className)}
+        width={80}
+        height={80}
+        src="/logo-icon.png"
+        alt="ZipRH"
+      /> */}
+      <Image
+        className={cn("block", className)}
+        height={70}
+        width={140}
+        src="/logo.png"
+        alt="ZipRH"
+      />
+    </>
   );
 };
 
