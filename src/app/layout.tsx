@@ -1,13 +1,14 @@
-import '~/styles/globals.css';
-import { type FC } from 'react';
-import ClientProviders from '~/app/client-providers';
-import { ClerkProvider } from '@clerk/nextjs';
-import { Inter } from 'next/font/google';
+import "~/styles/globals.css";
+import { type FC } from "react";
+import ClientProviders from "~/app/client-providers";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Inter } from "next/font/google";
+import { ptBR } from "@clerk/localizations";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 type Props = {
@@ -16,14 +17,7 @@ type Props = {
 
 const RootLayout: FC<Props> = ({ children }) => {
   return (
-    <ClerkProvider
-      appearance={{
-        variables: {
-          colorPrimary: 'black',
-          colorText: 'black',
-        },
-      }}
-    >
+    <ClerkProvider localization={ptBR}>
       <html lang="en" className={inter.className}>
         <body>
           <ClientProviders>{children}</ClientProviders>
