@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { FC } from "react";
+import { paths } from "~/constants/paths";
 import cn from "~/helpers/cn";
 
 type Props = {
@@ -8,22 +10,15 @@ type Props = {
 
 const Logo: FC<Props> = ({ className }) => {
   return (
-    <>
-      {/* <Image
-        className={cn("lg:hidden", className)}
-        width={80}
-        height={80}
-        src="/logo-icon.png"
-        alt="ZipRH"
-      /> */}
+    <Link href={paths.home}>
       <Image
         className={cn("block", className)}
         height={70}
-        width={140}
-        src="/logo.png"
+        width={175}
+        src="/logo-2.png"
         alt="ZipRH"
       />
-    </>
+    </Link>
   );
 };
 

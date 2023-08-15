@@ -19,6 +19,21 @@ const RootLayout: FC<Props> = ({ children }) => {
   return (
     <ClerkProvider localization={ptBR}>
       <html lang="en" className={inter.className}>
+        <head>
+          <link rel="icon" href="/logo-icon.png" sizes="any" />
+          <link
+            rel="icon"
+            href="/icon?/logo-icon.png"
+            type="image/png"
+            sizes="any"
+          />
+          <link
+            rel="apple-touch-icon"
+            href="/apple-icon?/logo-icon.png"
+            type="image/png"
+            sizes="any"
+          />
+        </head>
         <body>
           <ClientProviders>{children}</ClientProviders>
         </body>
