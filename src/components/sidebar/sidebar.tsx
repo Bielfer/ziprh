@@ -5,7 +5,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import cn from "~/helpers/cn";
 import { type IconType } from "~/types/core";
 import { usePathname } from "next/navigation";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { OrganizationSwitcher, UserButton, useUser } from "@clerk/nextjs";
 import Logo from "../logo";
 import Link from "next/link";
 
@@ -90,6 +90,9 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
+                          <OrganizationSwitcher />
+                        </li>
+                        <li>
                           <ul role="list" className="-mx-2 space-y-1">
                             {items.map((item) => (
                               <li key={item.name}>
@@ -117,11 +120,6 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                             ))}
                           </ul>
                         </li>
-                        {/* <li>
-                          <div className="text-xs font-semibold leading-6 text-gray-400">
-                            Your teams
-                          </div>
-                        </li> */}
                       </ul>
                     </nav>
                   </div>
@@ -138,6 +136,9 @@ const Sidebar: FC<Props> = ({ children, items }) => {
             </div>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                <li>
+                  <OrganizationSwitcher />
+                </li>
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
                     {items.map((item) => (
@@ -166,11 +167,6 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                     ))}
                   </ul>
                 </li>
-                {/* <li>
-                  <div className="text-xs font-semibold leading-6 text-gray-400">
-                    Your teams
-                  </div>
-                </li> */}
                 <li className="-mx-6 mt-auto">
                   <div className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
                     <UserButton />
