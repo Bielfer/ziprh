@@ -15,7 +15,7 @@ const Logo: FC<Props> = ({ className }) => {
         className={cn("block", className)}
         height={70}
         width={175}
-        src="/logo-2.png"
+        src="/logo.png"
         alt="ZipRH"
       />
     </Link>
