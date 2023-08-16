@@ -1,37 +1,30 @@
-import { dayAbbreviations, monthNames } from '~/constants/dates';
-import { generateIntegerArray } from '~/helpers/arrays';
-import { Listbox } from '@headlessui/react';
+import { dayAbbreviations, generateMonth, monthNames } from "~/constants/dates";
+import { generateIntegerArray } from "~/helpers/arrays";
+import { Listbox } from "@headlessui/react";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from '@heroicons/react/20/solid';
-import clsx from 'clsx';
+} from "@heroicons/react/20/solid";
 import {
-  addDays,
   addMonths,
   addYears,
-  differenceInCalendarDays,
   formatISO,
   getDate,
-  getDay,
   getMonth,
   getYear,
   isSameDay,
   isSameMonth,
   isToday as getIsToday,
-  lastDayOfMonth as getLastDayOfMonth,
-  startOfMonth,
-} from 'date-fns';
+} from "date-fns";
 import {
   type Dispatch,
   type FC,
   type SetStateAction,
-  useCallback,
   useMemo,
   useState,
-} from 'react';
-import cn from '~/helpers/cn';
+} from "react";
+import cn from "~/helpers/cn";
 
 type Props = {
   date: Date;
@@ -48,35 +41,7 @@ const Calendar: FC<Props> = ({
 }) => {
   const [calendarDate, setCalendarDate] = useState(selectedDate);
 
-  const generateCalendar = useCallback(() => {
-    const firstDayOfMonth = startOfMonth(calendarDate);
-    const lastDayOfMonth = getLastDayOfMonth(calendarDate);
-    const firstWeekDay = getDay(firstDayOfMonth);
-    let day = firstDayOfMonth;
-
-    if (firstWeekDay) {
-      day = addDays(firstDayOfMonth, -firstWeekDay);
-    }
-
-    const month: Date[][] = [];
-
-    while (differenceInCalendarDays(day, lastDayOfMonth) < 0) {
-      let i = 0;
-      const week: Date[] = [];
-
-      while (i < 7) {
-        week.push(day);
-        day = addDays(day, 1);
-        i += 1;
-      }
-
-      month.push(week);
-    }
-
-    return month;
-  }, [calendarDate]);
-
-  const calendar = useMemo(() => generateCalendar(), [generateCalendar]);
+  const calendar = useMemo(() => generateMonth(calendarDate), [calendarDate]);
 
   const goToPreviousMonth = () => {
     setCalendarDate((prev) => addMonths(prev, -1));
@@ -143,51 +108,39 @@ const Calendar: FC<Props> = ({
           <div key={dayAbbreviation}>{dayAbbreviation}</div>
         ))}
       </div>
-      <div className="mt-2 text-sm">
-        {calendar.map((week, weekIdx) => (
-          <div
-            key={formatISO(week[0] ?? 0) + formatISO(week[1] ?? 0)}
-            className={clsx(
-              weekIdx > 0 && 'border-t border-gray-200',
-              'grid grid-cols-7 py-2'
-            )}
-          >
-            {week.map((day) => {
-              const isToday = getIsToday(day);
-              const isSelected = isSameDay(day, selectedDate);
-              const isCurrentMonth = isSameMonth(day, calendarDate);
+      <div className="mt-2 grid grid-cols-7 text-sm">
+        {calendar.map((day, dayIdx) => {
+          const isToday = getIsToday(day);
+          const isSelected = isSameDay(day, selectedDate);
+          const isCurrentMonth = isSameMonth(day, calendarDate);
 
-              return (
-                <button
-                  key={formatISO(day)}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDate(day);
-                    if (onDateSelected) onDateSelected();
-                  }}
-                  className={cn(
-                    isSelected && 'text-white',
-                    !isSelected && isToday && 'text-primary-600',
-                    !isSelected &&
-                      !isToday &&
-                      isCurrentMonth &&
-                      'text-gray-900',
-                    !isSelected &&
-                      !isToday &&
-                      !isCurrentMonth &&
-                      'text-gray-400',
-                    isSelected && 'bg-primary-600',
-                    !isSelected && 'hover:bg-gray-200',
-                    (isSelected || isToday) && 'font-semibold',
-                    'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
-                  )}
-                >
-                  {getDate(day)}
-                </button>
-              );
-            })}
-          </div>
-        ))}
+          return (
+            <div
+              className={cn("py-2", dayIdx > 6 && "border-t border-gray-200")}
+              key={formatISO(day)}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDate(day);
+                  if (onDateSelected) onDateSelected();
+                }}
+                className={cn(
+                  isSelected && "text-white",
+                  !isSelected && isToday && "text-primary-600",
+                  !isSelected && !isToday && isCurrentMonth && "text-gray-900",
+                  !isSelected && !isToday && !isCurrentMonth && "text-gray-400",
+                  isSelected && "bg-primary-600",
+                  !isSelected && "hover:bg-gray-200",
+                  (isSelected || isToday) && "font-semibold",
+                  "mx-auto flex h-8 w-8 items-center justify-center rounded-full"
+                )}
+              >
+                {getDate(day)}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
