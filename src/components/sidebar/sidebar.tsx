@@ -90,7 +90,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
-                          <OrganizationSwitcher />
+                          <OrganizationSwitcher hidePersonal />
                         </li>
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
@@ -137,7 +137,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
-                  <OrganizationSwitcher />
+                  <OrganizationSwitcher hidePersonal />
                 </li>
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
