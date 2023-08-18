@@ -8,32 +8,16 @@ import {
   getYear,
   isSameMonth,
   isToday as getIsToday,
+  format,
 } from "date-fns";
 import { dayAbbreviations, monthNames } from "~/constants/dates";
-import { generateMonth } from "~/helpers/dates";
 
-const Calendar: FC = () => {
+type Props = {
+  days: { time: Date; events: { name: string; time: Date }[] }[];
+};
+
+const Calendar: FC<Props> = ({ days }) => {
   const today = new Date();
-  const days = generateMonth(today);
-
-  const events = [
-    {
-      name: "Ponto 1",
-      time: "8:00",
-    },
-    {
-      name: "Ponto 2",
-      time: "12:00",
-    },
-    {
-      name: "Ponto 3",
-      time: "14:00",
-    },
-    {
-      name: "Ponto 3",
-      time: "18:00",
-    },
-  ];
 
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
@@ -75,12 +59,12 @@ const Calendar: FC = () => {
         <div className="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:gap-px">
             {days.map((day) => {
-              const isToday = getIsToday(day);
-              const isCurrentMonth = isSameMonth(day, today);
+              const isToday = getIsToday(day.time);
+              const isCurrentMonth = isSameMonth(day.time, today);
 
               return (
                 <div
-                  key={day.toDateString()}
+                  key={day.time.toDateString()}
                   className={cn(
                     isCurrentMonth
                       ? "cursor-pointer bg-white hover:bg-gray-100"
@@ -89,40 +73,40 @@ const Calendar: FC = () => {
                   )}
                 >
                   <time
-                    dateTime={day.toDateString()}
+                    dateTime={day.time.toDateString()}
                     className={
                       isToday
                         ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 font-semibold text-white"
                         : undefined
                     }
                   >
-                    {getDate(day)}
+                    {getDate(day.time)}
                   </time>
-                  {events.length > 0 ? (
+                  {day.events.length > 0 ? (
                     <ol className="mt-2">
-                      {events.slice(0, 2).map((event) => (
+                      {day.events.slice(0, 2).map((event) => (
                         <li key={event.name}>
                           <div className="group flex">
                             <p className="flex-auto truncate font-medium text-gray-900">
                               {event.name}
                             </p>
                             <time
-                              dateTime={event.time}
+                              dateTime={event.time.toDateString()}
                               className="ml-3 hidden flex-none text-gray-500 xl:block"
                             >
-                              {event.time}
+                              {format(event.time, "H:mm")}
                             </time>
                           </div>
                         </li>
                       ))}
-                      {events.length > 2 && (
+                      {day.events.length > 2 && (
                         <li className="text-gray-500">
-                          + {events.length - 2} pontos
+                          + {day.events.length - 2} pontos
                         </li>
                       )}
                     </ol>
                   ) : (
-                    <div className="text-gray-500">Nenhum ponto batido</div>
+                    <div className="h-10">-</div>
                   )}
                 </div>
               );
@@ -130,12 +114,12 @@ const Calendar: FC = () => {
           </div>
           <div className="isolate grid w-full grid-cols-7 gap-px lg:hidden">
             {days.map((day) => {
-              const isToday = getIsToday(day);
-              const isCurrentMonth = isSameMonth(day, today);
+              const isToday = getIsToday(day.time);
+              const isCurrentMonth = isSameMonth(day.time, today);
 
               return (
                 <button
-                  key={day.toDateString()}
+                  key={day.time.toDateString()}
                   type="button"
                   className={cn(
                     isCurrentMonth ? "bg-white" : "bg-gray-50",
@@ -147,19 +131,19 @@ const Calendar: FC = () => {
                   )}
                 >
                   <time
-                    dateTime={day.toDateString()}
+                    dateTime={day.time.toDateString()}
                     className={cn(
                       "flex h-6 w-6 items-center justify-center rounded-full",
                       isToday && "bg-primary-600 text-white",
                       "ml-auto"
                     )}
                   >
-                    {getDate(day)}
+                    {getDate(day.time)}
                   </time>
-                  <span className="sr-only">{events.length} events</span>
-                  {events.length > 0 && (
+                  <span className="sr-only">{day.events.length} events</span>
+                  {day.events.length > 0 && (
                     <span className="-mx-0.5 mt-auto flex flex-wrap-reverse">
-                      {events.map((event) => (
+                      {day.events.map((event) => (
                         <span
                           key={event.name}
                           className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-gray-400"

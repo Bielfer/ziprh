@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import Calendar from "./calendar";
+import CalendarWrapper from "./calendar-wrapper";
 
 type Props = {
   params: {
@@ -19,13 +19,14 @@ export const generateMetadata = ({ searchParams }: Props) => {
   };
 };
 
-const ClockInByEmployee: FC<Props> = ({ searchParams }) => {
+const ClockInByEmployee: FC<Props> = ({ searchParams, params }) => {
   const { employeeName } = searchParams;
+  const { userId } = params;
 
   return (
     <>
       <h1>{employeeName}</h1>
-      <Calendar />
+      <CalendarWrapper userId={userId} />
     </>
   );
 };

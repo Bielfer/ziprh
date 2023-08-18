@@ -7,6 +7,40 @@ import { isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
 
 export const clockInsRouter = router({
+  getMany: privateProcedure
+    .input(
+      z.object({
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+        userId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { endDate, startDate, userId } = input;
+
+      const hasInterval = !!startDate && !!endDate;
+
+      const [clockIns, error] = await tryCatch(
+        prisma.clockIn.findMany({
+          where: {
+            userId,
+            ...(hasInterval && {
+              punchTime: {
+                gte: startDate,
+                lte: endDate,
+              },
+            }),
+          },
+          orderBy: {
+            punchTime: "asc",
+          },
+        })
+      );
+
+      if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
+
+      return clockIns;
+    }),
   employee: privateProcedure
     .use(isRole(roles.basicMember))
     .mutation(async ({ ctx }) => {
