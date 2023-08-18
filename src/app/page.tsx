@@ -1,13 +1,25 @@
-"use client";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, auth } from "@clerk/nextjs";
+import { type Metadata } from "next";
+import { redirect } from "next/navigation";
+import { type FC } from "react";
 import Button from "~/components/button";
 import MyLink from "~/components/my-link";
 import { paths } from "~/constants/paths";
-import { trpc } from "~/services/trpc";
+import { roles } from "~/constants/roles";
 
-export default function Home() {
-  const { data } = trpc.test.create.useQuery({});
-  console.log(data);
+export const metadata: Metadata = {
+  title: "O melhor sistema de gestão de funcionários | ZipRH",
+  description:
+    "Acompanhe os seus funcionários, a escala e os pontos que foram batidos",
+};
+
+const Home: FC = () => {
+  const { userId, orgRole } = auth();
+
+  if (userId && orgRole === roles.basicMember)
+    return redirect(paths.employeeAvailabilities);
+  if (userId && orgRole === roles.admin)
+    return redirect(paths.employerAvailabilities);
 
   return (
     <>
@@ -52,4 +64,6 @@ export default function Home() {
       </div>
     </>
   );
-}
+};
+
+export default Home;
