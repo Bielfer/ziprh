@@ -21,8 +21,8 @@ const FormikNumber = ({
   placeholder,
   disabled,
 }: Props) => {
-  const [, { error, initialValue, touched }, { setValue }] = useField(name);
-  const [input, setInput] = useState(initialValue);
+  const [{ value }, { error, touched }, { setValue }] = useField(name);
+  const [input, setInput] = useState(value);
 
   const formats = {
     default: (val: string) => Number(val.replace(",", ".")),
@@ -46,6 +46,7 @@ const FormikNumber = ({
       hint={hint}
       placeholder={placeholder}
       disabled={disabled}
+      name={name}
     />
   );
 };
