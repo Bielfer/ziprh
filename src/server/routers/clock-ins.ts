@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
+import { type ClockIn } from "@prisma/client";
 
 export const clockInsRouter = router({
   getMany: privateProcedure
@@ -66,16 +67,21 @@ export const clockInsRouter = router({
 
       return clockIn;
     }),
-  employer: privateProcedure
+  upsertMany: privateProcedure
     .input(
       z.object({
-        punchTime: z.date(),
         userId: z.string(),
+        clockIns: z
+          .object({
+            punchTime: z.date(),
+            id: z.number(),
+          })
+          .array(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { orgId } = ctx.auth;
-      const { punchTime, userId } = input;
+      const { clockIns, userId } = input;
 
       if (!orgId)
         throw new TRPCError({
@@ -83,19 +89,33 @@ export const clockInsRouter = router({
           message: "No organization provided!",
         });
 
-      const [clockIn, error] = await tryCatch(
-        prisma.clockIn.create({
-          data: {
-            punchTime,
-            userId,
-            organizationId: orgId,
-          },
+      const [upsertClockIns, error] = await tryCatch(
+        prisma.$transaction(async (tx) => {
+          const savedClockIns: ClockIn[] = [];
+
+          for (const clockIn of clockIns) {
+            const savedClockIn = await tx.clockIn.upsert({
+              where: { id: clockIn.id },
+              update: {
+                punchTime: clockIn.punchTime,
+              },
+              create: {
+                userId,
+                organizationId: orgId,
+                punchTime: clockIn.punchTime,
+              },
+            });
+
+            savedClockIns.push(savedClockIn);
+          }
+
+          return savedClockIns;
         })
       );
 
       if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
 
-      return clockIn;
+      return upsertClockIns;
     }),
   edit: privateProcedure
     .use(isRole(roles.admin))
