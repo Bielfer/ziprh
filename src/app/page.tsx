@@ -1,6 +1,8 @@
 "use client";
+import { UserButton } from "@clerk/nextjs";
 import Button from "~/components/button";
 import MyLink from "~/components/my-link";
+import { paths } from "~/constants/paths";
 import { trpc } from "~/services/trpc";
 
 export default function Home() {
@@ -40,6 +42,13 @@ export default function Home() {
         <MyLink href="#" variant="default">
           Teste
         </MyLink>
+        <MyLink href={paths.employerClockIns} variant="button-primary">
+          Clock Ins
+        </MyLink>
+        <MyLink href={paths.signIn} variant="button-secondary">
+          login
+        </MyLink>
+        <UserButton />
       </div>
     </>
   );
