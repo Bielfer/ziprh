@@ -7,6 +7,8 @@ export type IconType = React.ForwardRefExoticComponent<
 
 export type ObjectEntries<T> = [keyof T, T[keyof T]][];
 
+export type ObjectValues<T> = T[keyof T];
+
 export type ChangeTypeOfKeys<
   T extends object,
   Keys extends keyof T,
