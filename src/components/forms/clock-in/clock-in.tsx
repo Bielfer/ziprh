@@ -28,11 +28,14 @@ type Props = {
 const FormClockIn: FC<Props> = ({ date, className, afterSubmit }) => {
   const { userId } = useParams();
   const { addToast } = useToast();
-  const { data: clockIns, isLoading } = trpc.clockIns.getMany.useQuery({
-    userId: userId ?? "",
-    startDate: startOfDay(date),
-    endDate: endOfDay(date),
-  });
+  const { data: clockIns, isLoading } = trpc.clockIns.getMany.useQuery(
+    {
+      userId: userId ?? "",
+      startDate: startOfDay(date),
+      endDate: endOfDay(date),
+    },
+    { cacheTime: 0 }
+  );
   const { mutateAsync: upsertClockIns } =
     trpc.clockIns.upsertMany.useMutation();
 
