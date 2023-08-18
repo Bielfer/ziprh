@@ -27,7 +27,7 @@ const EmployeesList: FC = () => {
             <Link
               className="relative flex w-full cursor-pointer items-center space-x-6 rounded-lg px-4 py-6 text-left hover:bg-gray-50 xl:static"
               href={{
-                pathname: paths.employerClockInsByEmployee,
+                pathname: paths.employerClockInsByUserId(employee.id),
                 query: {
                   employeeName: `${employee.publicUserData.firstName} ${employee.publicUserData.lastName}`,
                 },
