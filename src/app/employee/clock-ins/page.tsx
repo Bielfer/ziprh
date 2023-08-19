@@ -1,5 +1,7 @@
 import { type Metadata } from "next";
 import { type FC } from "react";
+import FeedWrapper from "./feed-wrapper";
+import { auth } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Seus Pontos | ZipRH",
@@ -7,9 +9,12 @@ export const metadata: Metadata = {
 };
 
 const EmployeeClockIns: FC = () => {
+  const { userId } = auth();
+
   return (
     <>
-      <h1>Pontos Batidos</h1>
+      <h1 className="mb-8">Pontos Batidos Hoje</h1>
+      <FeedWrapper userId={userId ?? ""} />
     </>
   );
 };
