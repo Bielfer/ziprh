@@ -6,6 +6,7 @@ import { z } from "zod";
 import { isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
 import { type ClockIn } from "@prisma/client";
+import { differenceInMinutes } from "date-fns";
 
 export const clockInsRouter = router({
   getMany: privateProcedure
@@ -42,10 +43,11 @@ export const clockInsRouter = router({
 
       return clockIns;
     }),
-  employee: privateProcedure
+  employeePunch: privateProcedure
     .use(isRole(roles.basicMember))
     .mutation(async ({ ctx }) => {
       const { userId, orgId } = ctx.auth;
+      const punchTime = new Date();
 
       if (!orgId)
         throw new TRPCError({
@@ -53,10 +55,39 @@ export const clockInsRouter = router({
           message: "No organization provided!",
         });
 
+      const [lastClockIn, errorSearching] = await tryCatch(
+        prisma.clockIn.findFirst({
+          where: {
+            punchTime: {
+              lte: punchTime,
+            },
+          },
+          orderBy: {
+            punchTime: "desc",
+          },
+        })
+      );
+
+      if (errorSearching)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Failed to find last clock in!",
+        });
+
+      if (
+        lastClockIn &&
+        differenceInMinutes(punchTime, lastClockIn.punchTime) < 5
+      )
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message:
+            "You can't punch the clock in intervals lower than 5 minutes",
+        });
+
       const [clockIn, error] = await tryCatch(
         prisma.clockIn.create({
           data: {
-            punchTime: new Date(),
+            punchTime,
             userId,
             organizationId: orgId,
           },
