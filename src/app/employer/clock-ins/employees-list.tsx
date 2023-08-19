@@ -1,5 +1,5 @@
 "use client";
-import { type FC } from "react";
+import { useMemo, type FC } from "react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { ClockIcon } from "@heroicons/react/24/outline";
@@ -14,8 +14,10 @@ const EmployeesList: FC = () => {
     membershipList: { limit: 20 },
   });
 
-  const filteredMembershipList = membershipList?.filter(
-    (item) => item.publicUserData.userId !== user?.id
+  const filteredMembershipList = useMemo(
+    () =>
+      membershipList?.filter((item) => item.publicUserData.userId !== user?.id),
+    [membershipList, user?.id]
   );
 
   return (
