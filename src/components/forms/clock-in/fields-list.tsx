@@ -26,7 +26,7 @@ const FieldsList: FC = () => {
         <div className="col-span-3 font-medium">Minutos</div>
         {clockIns?.map((item, idx) => (
           <div
-            key={idx}
+            key={`${item.id} ${idx}`}
             className="col-span-11 grid grid-cols-11 items-center gap-x-3 lg:col-span-12 lg:grid-cols-12 lg:gap-x-5"
           >
             <p className="col-span-4 font-medium lg:col-span-5">
