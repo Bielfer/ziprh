@@ -1,5 +1,5 @@
 import { ErrorMessage, useField } from "formik";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import FormikNumber from "../formik-number";
 import IconButton from "~/components/icon-button";
 import { PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
@@ -7,10 +7,12 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/20/solid";
 type ClockIn = { hours: number; minutes: number; id: number };
 
 const FieldsList: FC = () => {
+  const [id, setId] = useState(-1);
   const [{ value: clockIns }, , { setValue }] = useField<ClockIn[]>("clockIns");
 
   const push = () => {
-    setValue([...clockIns, { hours: 0, minutes: 0, id: -1 }]);
+    setValue([...clockIns, { hours: 0, minutes: 0, id }]);
+    setId((prev) => prev - 1);
   };
 
   const remove = (idx: number) => {
@@ -26,7 +28,7 @@ const FieldsList: FC = () => {
         <div className="col-span-3 font-medium">Minutos</div>
         {clockIns?.map((item, idx) => (
           <div
-            key={`${item.id} ${idx}`}
+            key={item.id}
             className="col-span-11 grid grid-cols-11 items-center gap-x-3 lg:col-span-12 lg:grid-cols-12 lg:gap-x-5"
           >
             <p className="col-span-4 font-medium lg:col-span-5">
