@@ -77,11 +77,12 @@ export const clockInsRouter = router({
             id: z.number(),
           })
           .array(),
+        deleteClockIns: z.number().array(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const { orgId } = ctx.auth;
-      const { clockIns, userId } = input;
+      const { clockIns, userId, deleteClockIns } = input;
 
       if (!orgId)
         throw new TRPCError({
@@ -91,6 +92,10 @@ export const clockInsRouter = router({
 
       const [upsertClockIns, error] = await tryCatch(
         prisma.$transaction(async (tx) => {
+          for (const toDeleteId of deleteClockIns) {
+            await tx.clockIn.delete({ where: { id: toDeleteId } });
+          }
+
           const savedClockIns: ClockIn[] = [];
 
           for (const clockIn of clockIns) {

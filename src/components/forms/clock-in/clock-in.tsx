@@ -66,6 +66,13 @@ const FormClockIn: FC<Props> = ({ date, className, afterSubmit }) => {
   });
 
   const handleSubmit = async (values: typeof initialValues) => {
+    const toDeleteClockIns = initialValues.clockIns
+      .map((clockIn) => clockIn.id)
+      .filter(
+        (clockInId) =>
+          !values.clockIns.find((clockIn) => clockIn.id === clockInId)
+      );
+
     const [, error] = await tryCatch(
       upsertClockIns({
         clockIns: values.clockIns.map((clockIn) => ({
@@ -73,6 +80,7 @@ const FormClockIn: FC<Props> = ({ date, className, afterSubmit }) => {
           punchTime: setMinutes(setHours(date, clockIn.hours), clockIn.minutes),
         })),
         userId: userId ?? "",
+        deleteClockIns: toDeleteClockIns,
       })
     );
 
