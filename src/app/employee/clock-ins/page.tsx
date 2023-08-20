@@ -2,10 +2,11 @@ import { type Metadata } from "next";
 import { type FC } from "react";
 import FeedWrapper from "./feed-wrapper";
 import { auth } from "@clerk/nextjs";
+import TabsWrapper from "./tabs-wrapper";
 
 export const metadata: Metadata = {
-  title: "Seus Pontos | ZipRH",
-  description: "Acompanhe os pontos que você bateu nesse mês",
+  title: "Seus Pontos de Hoje | ZipRH",
+  description: "Acompanhe os pontos que você bateu hoje",
 };
 
 const EmployeeClockIns: FC = () => {
@@ -13,7 +14,8 @@ const EmployeeClockIns: FC = () => {
 
   return (
     <>
-      <h1 className="mb-8">Pontos Batidos Hoje</h1>
+      <h1>Pontos Batidos Hoje</h1>
+      <TabsWrapper />
       <FeedWrapper userId={userId ?? ""} />
     </>
   );
