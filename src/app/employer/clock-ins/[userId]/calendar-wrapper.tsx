@@ -1,12 +1,12 @@
 "use client";
 import { useState, type FC } from "react";
 import { trpc } from "~/services/trpc";
-import Calendar from "./calendar";
 import { generateMonth } from "~/helpers/dates";
 import { addMonths, endOfMonth, isSameDay, startOfMonth } from "date-fns";
 import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import FormClockIn from "~/components/forms/clock-in";
+import CalendarMonthView from "~/components/calendar-month-view";
 
 type Props = {
   userId: string;
@@ -47,7 +47,7 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
   return (
     <>
       <LoadingWrapper className="py-10" isLoading={isLoading}>
-        <Calendar
+        <CalendarMonthView
           date={selectedDate}
           days={days}
           onDayClick={(day) => {

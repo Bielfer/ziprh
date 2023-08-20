@@ -20,7 +20,7 @@ type Props = {
   date: Date;
 };
 
-const Calendar: FC<Props> = ({
+const CalendarMonthView: FC<Props> = ({
   days,
   onDayClick,
   goToNextMonth,
@@ -181,4 +181,4 @@ const Calendar: FC<Props> = ({
   );
 };
 
-export default Calendar;
+export default CalendarMonthView;
