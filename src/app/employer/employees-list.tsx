@@ -13,7 +13,7 @@ type Props = {
 
 const EmployeesList: FC<Props> = ({ href }) => {
   const { user } = useUser();
-  const { membershipList, isLoaded } = useOrganization({
+  const { membershipList } = useOrganization({
     membershipList: { limit: 20 },
   });
 
@@ -25,10 +25,7 @@ const EmployeesList: FC<Props> = ({ href }) => {
 
   return (
     <Container className="pt-8">
-      <h2 className="text-base font-semibold leading-6 text-gray-900">
-        Funcionários
-      </h2>
-      <LoadingWrapper isLoading={!isLoaded} className="py-16">
+      <LoadingWrapper isLoading={!membershipList} className="py-16">
         <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
           {filteredMembershipList?.map((employee) => (
             <li key={employee.publicUserData.userId}>
