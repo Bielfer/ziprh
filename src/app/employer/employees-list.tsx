@@ -5,10 +5,13 @@ import { useOrganization, useUser } from "@clerk/nextjs";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import Container from "~/components/container";
 import Link from "next/link";
-import { paths } from "~/constants/paths";
 import LoadingWrapper from "~/components/loading-wrapper";
 
-const EmployeesList: FC = () => {
+type Props = {
+  href: (employeeId: string) => string;
+};
+
+const EmployeesList: FC<Props> = ({ href }) => {
   const { user } = useUser();
   const { membershipList, isLoaded } = useOrganization({
     membershipList: { limit: 20 },
@@ -32,9 +35,7 @@ const EmployeesList: FC = () => {
               <Link
                 className="relative flex w-full cursor-pointer items-center space-x-6 rounded-lg px-4 py-6 text-left hover:bg-gray-50 xl:static"
                 href={{
-                  pathname: paths.employerClockInsByUserId(
-                    employee.publicUserData.userId ?? ""
-                  ),
+                  pathname: href(employee.publicUserData.userId ?? ""),
                   query: {
                     employeeName: `${employee.publicUserData.firstName} ${employee.publicUserData.lastName}`,
                   },

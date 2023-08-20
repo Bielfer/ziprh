@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { type Metadata } from "next";
-import EmployeesList from "./employees-list";
+import EmployeesListWrapper from "./employees-list-wrapper";
 
 export const metadata: Metadata = {
   title: "Pontos dos Funcionários | ZipRH",
@@ -12,7 +12,7 @@ const EmployerClockIns: FC = () => {
   return (
     <>
       <h1>Pontos</h1>
-      <EmployeesList />
+      <EmployeesListWrapper />
     </>
   );
 };
