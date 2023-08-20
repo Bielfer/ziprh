@@ -13,7 +13,7 @@ type Props = {
 };
 
 const CalendarWrapper: FC<Props> = ({ userId }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(2023, 7, 29));
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isFormClockInOpen, setIsFormClockInOpen] = useState(false);
   const {
     data: clockIns,
