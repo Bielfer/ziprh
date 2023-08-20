@@ -2,6 +2,7 @@
 import type { FC } from "react";
 import Tabs from "~/components/tabs";
 import { paths } from "~/constants/paths";
+import cn from "~/helpers/cn";
 
 const items = [
   {
@@ -14,8 +15,12 @@ const items = [
   },
 ];
 
-const TabsWrapper: FC = () => {
-  return <Tabs items={items} className="pb-10 pt-4" />;
+type Props = {
+  className?: string;
+};
+
+const TabsWrapper: FC<Props> = ({ className }) => {
+  return <Tabs items={items} className={cn("pb-10 pt-4", className)} />;
 };
 
 export default TabsWrapper;
