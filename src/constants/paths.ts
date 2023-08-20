@@ -6,6 +6,9 @@ const paths = {
   employerScheduleByUserId: (userId: string) => `/employer/schedule/${userId}`,
   employerClockIns: "/employer/clock-ins",
   employerClockInsByUserId: (userId: string) => `/employer/clock-ins/${userId}`,
+  employerEmployees: "/employer/employees",
+  employerEmployeesByUserId: (userId: string) =>
+    `/employer/employees/${userId}`,
   employeeSchedule: "/employee/schedule",
   employeeClockIns: "/employee/clock-ins",
   employeeClockInsHistory: "/employee/clock-ins/history",
