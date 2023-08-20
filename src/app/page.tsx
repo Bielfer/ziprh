@@ -17,9 +17,9 @@ const Home: FC = () => {
   const { userId, orgRole } = auth();
 
   if (userId && orgRole === roles.basicMember)
-    return redirect(paths.employeeAvailabilities);
+    return redirect(paths.employeeSchedule);
   if (userId && orgRole === roles.admin)
-    return redirect(paths.employerAvailabilities);
+    return redirect(paths.employerSchedule);
 
   return (
     <>

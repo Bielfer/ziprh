@@ -5,9 +5,7 @@ import { paths } from "~/constants/paths";
 
 const EmployeesListWrapper: FC = () => {
   return (
-    <EmployeesList
-      href={(userId) => paths.employerAvailabilitiesByUserId(userId)}
-    />
+    <EmployeesList href={(userId) => paths.employerScheduleByUserId(userId)} />
   );
 };
 

@@ -5,7 +5,7 @@ import Sidebar from "~/components/sidebar";
 import { paths } from "~/constants/paths";
 
 const items = [
-  { name: "Escala", href: paths.employerAvailabilities, icon: CalendarIcon },
+  { name: "Escala", href: paths.employerSchedule, icon: CalendarIcon },
   { name: "Pontos", href: paths.employerClockIns, icon: FingerPrintIcon },
 ];
 
