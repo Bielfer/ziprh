@@ -28,11 +28,13 @@ const EmployeesList: FC = () => {
       <LoadingWrapper isLoading={!isLoaded} className="py-16">
         <ol className="mt-4 divide-y divide-gray-100 text-sm leading-6 lg:col-span-7 xl:col-span-8">
           {filteredMembershipList?.map((employee) => (
-            <li key={employee.id}>
+            <li key={employee.publicUserData.userId}>
               <Link
                 className="relative flex w-full cursor-pointer items-center space-x-6 rounded-lg px-4 py-6 text-left hover:bg-gray-50 xl:static"
                 href={{
-                  pathname: paths.employerClockInsByUserId(employee.id),
+                  pathname: paths.employerClockInsByUserId(
+                    employee.publicUserData.userId ?? ""
+                  ),
                   query: {
                     employeeName: `${employee.publicUserData.firstName} ${employee.publicUserData.lastName}`,
                   },
