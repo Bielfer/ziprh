@@ -13,7 +13,7 @@ const CheckBox: FC<Props> = ({ checked, onChange, name }) => {
       id={name}
       name={name}
       type="checkbox"
-      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600"
+      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-600"
       onChange={onChange}
     />
   );
