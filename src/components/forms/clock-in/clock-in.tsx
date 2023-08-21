@@ -15,9 +15,12 @@ import LoadingWrapper from "~/components/loading-wrapper";
 import { trpc } from "~/services/trpc";
 import zodValidator from "~/helpers/zod-validator";
 import { z } from "zod";
-import FieldsList from "./fields-list";
 import { tryCatch } from "~/helpers/try-catch";
 import { useToast } from "~/components/toast";
+import FormikAdd from "../formik-add";
+import FormikNumber from "../formik-number";
+import IconButton from "~/components/icon-button";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 type Props = {
   date: Date;
@@ -70,7 +73,8 @@ const FormClockIn: FC<Props> = ({ date, className, afterSubmit }) => {
       .map((clockIn) => clockIn.id)
       .filter(
         (clockInId) =>
-          !values.clockIns.find((clockIn) => clockIn.id === clockInId)
+          !values.clockIns.find((clockIn) => clockIn.id === clockInId) &&
+          clockInId > 0
       );
 
     const [, error] = await tryCatch(
@@ -107,7 +111,45 @@ const FormClockIn: FC<Props> = ({ date, className, afterSubmit }) => {
         >
           {({ isSubmitting }) => (
             <Form>
-              <FieldsList />
+              <FormikAdd
+                name="clockIns"
+                render={({ remove, value }) => (
+                  <div className="grid grid-cols-11 gap-x-3 gap-y-3 lg:grid-cols-12 lg:gap-x-5">
+                    <div className="col-span-3 col-start-5 font-medium lg:col-start-6">
+                      Horas
+                    </div>
+                    <div className="col-span-3 font-medium">Minutos</div>
+                    {value?.map((item, idx) => (
+                      <div
+                        key={item.id}
+                        className="col-span-11 grid grid-cols-11 items-center gap-x-3 lg:col-span-12 lg:grid-cols-12 lg:gap-x-5"
+                      >
+                        <p className="col-span-4 font-medium lg:col-span-5">
+                          Ponto {idx + 1}
+                        </p>
+                        <FormikNumber
+                          className="col-span-3"
+                          name={`clockIns[${idx}].hours`}
+                        />
+                        <FormikNumber
+                          className="col-span-3"
+                          name={`clockIns[${idx}].minutes`}
+                        />
+                        <div>
+                          {value.length > 1 && (
+                            <IconButton
+                              icon={TrashIcon}
+                              variant="link-danger"
+                              size="sm"
+                              onClick={() => remove(idx)}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              />
               <div className="flex justify-end pt-4">
                 <Button variant="primary" type="submit" loading={isSubmitting}>
                   Salvar
