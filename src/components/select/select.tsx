@@ -70,7 +70,7 @@ const Select: FC<Props> = ({
               <Listbox.Option
                 key={`${item.value} ${item.text}`}
                 className={({ active }) =>
-                  `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                  `relative cursor-pointer select-none py-2 pl-6 pr-4 sm:pl-10 ${
                     active ? "bg-primary-100 text-primary-900" : "text-gray-900"
                   }`
                 }
@@ -86,7 +86,7 @@ const Select: FC<Props> = ({
                       {item.text}
                     </span>
                     {isSelected && (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600">
+                      <span className="absolute inset-y-0 left-0 hidden items-center pl-3 text-primary-600 sm:flex">
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
                     )}
