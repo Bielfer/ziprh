@@ -9,6 +9,7 @@ interface Props {
   label?: string;
   hint?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 const FormikSelect: FC<Props> = ({
@@ -18,11 +19,13 @@ const FormikSelect: FC<Props> = ({
   label,
   hint,
   disabled,
+  className,
 }) => {
   const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   return (
     <Select
+      className={className}
       label={label}
       selected={value}
       setSelected={(e) => {
