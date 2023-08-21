@@ -20,7 +20,8 @@ const FormikAdd: FC<Props> = ({ name, render }) => {
 
     Object.entries(initialValue?.[0] ?? {}).forEach(([key, value]) => {
       if (key === "id") return;
-      if (typeof value === "string") newObj[key] = "";
+      if (Array.isArray(value)) newObj[key] = [];
+      else if (typeof value === "string") newObj[key] = "";
       else newObj[key] = 0;
     });
 
