@@ -14,3 +14,18 @@ export const isRole = (role: ObjectValues<typeof roles>) =>
 
     return next();
   });
+
+export const hasOrganization = middleware(({ ctx, next }) => {
+  if (!ctx.auth.orgId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "No organization provided!",
+    });
+  }
+
+  return next({
+    ctx: {
+      auth: { ...ctx.auth, orgId: ctx.auth.orgId },
+    },
+  });
+});
