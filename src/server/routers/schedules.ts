@@ -4,6 +4,8 @@ import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { type EmployeeSchedule } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { clerkClient } from "@clerk/nextjs";
+import { type OrganizationMembership } from "@clerk/nextjs/dist/types/server";
 
 const formatDailySchedule = (schedule: {
   days: number[];
@@ -22,15 +24,23 @@ const formatDailySchedule = (schedule: {
 };
 
 const dailyScheduleToNumbers = ({
-  id,
-  createdAt,
-  updatedAt,
-  beginning,
-  end,
-  organizationId,
-  userId,
-  ...days
-}: EmployeeSchedule) => {
+  organizationMembership,
+  schedule,
+}: {
+  organizationMembership: OrganizationMembership[];
+  schedule: EmployeeSchedule;
+}) => {
+  const {
+    id,
+    createdAt,
+    updatedAt,
+    beginning,
+    end,
+    organizationId,
+    userId,
+    ...days
+  } = schedule;
+
   const daysToNumber = {
     sunday: 0,
     monday: 1,
@@ -40,6 +50,11 @@ const dailyScheduleToNumbers = ({
     friday: 5,
     saturday: 6,
   } as const;
+
+  const member = organizationMembership.find(
+    (member) => member.publicUserData?.userId === userId
+  );
+
   return {
     id,
     createdAt,
@@ -48,6 +63,8 @@ const dailyScheduleToNumbers = ({
     end,
     organizationId,
     userId,
+    userFullName: `${member?.publicUserData?.firstName} ${member?.publicUserData?.lastName}`,
+    userImage: member?.publicUserData?.imageUrl,
     days: Object.entries(days)
       .filter(([, value]) => value)
       .map(([key]) => daysToNumber[key as keyof typeof daysToNumber]),
@@ -58,25 +75,46 @@ export const schedulesRouter = router({
   getMany: privateProcedure
     .input(
       z.object({
-        userId: z.string(),
+        userId: z.string().optional(),
       })
     )
     .query(async ({ input, ctx }) => {
       const { orgId } = ctx.auth;
       const { userId } = input;
 
+      if (!orgId)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No organization provided!",
+        });
+
       const [schedules, error] = await tryCatch(
         prisma.employeeSchedule.findMany({
           where: {
-            userId,
             organizationId: orgId,
+            ...(!!userId && { userId }),
           },
         })
       );
 
       if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
 
-      const employeeSchedules = schedules?.map(dailyScheduleToNumbers);
+      const [organizationMembership, errorOrganization] = await tryCatch(
+        clerkClient.organizations.getOrganizationMembershipList({
+          organizationId: orgId,
+          limit: 20,
+        })
+      );
+
+      if (errorOrganization || !organizationMembership)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: errorOrganization,
+        });
+
+      const employeeSchedules = schedules?.map((schedule) =>
+        dailyScheduleToNumbers({ schedule, organizationMembership })
+      );
 
       return employeeSchedules;
     }),
