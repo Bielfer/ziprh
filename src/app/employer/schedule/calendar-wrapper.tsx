@@ -2,7 +2,14 @@
 import { useState, type FC, useMemo } from "react";
 import { trpc } from "~/services/trpc";
 import { generateMonth } from "~/helpers/dates";
-import { addMonths, format, getDay } from "date-fns";
+import {
+  addMonths,
+  endOfMonth,
+  format,
+  getDay,
+  isSameDay,
+  startOfMonth,
+} from "date-fns";
 import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import CalendarMonthView from "~/components/calendar-month-view";
@@ -12,12 +19,24 @@ const CalendarWrapper: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDaysOffOpen, setIsDaysOffOpen] = useState(false);
   const { data: schedules, isLoading } = trpc.schedules.getMany.useQuery({});
+  const { data: daysOff, refetch: refetchDaysOff } =
+    trpc.dayOff.getMany.useQuery({
+      startDate: startOfMonth(selectedDate),
+      endDate: endOfMonth(selectedDate),
+    });
+
+  console.log(daysOff);
 
   const days = useMemo(
     () =>
       generateMonth(selectedDate).map((day) => {
-        const filteredSchedules = schedules?.filter((schedule) =>
-          schedule.days.includes(getDay(day))
+        const filteredSchedules = schedules?.filter(
+          (schedule) =>
+            schedule.days.includes(getDay(day)) &&
+            !daysOff?.find(
+              (dayOff) =>
+                isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
+            )
         );
         const events: { name: string; time: string }[] = [];
         let amountOfTimes = 0;
@@ -49,7 +68,7 @@ const CalendarWrapper: FC = () => {
           events,
         };
       }),
-    [selectedDate, schedules]
+    [selectedDate, schedules, daysOff]
   );
 
   const goToNextMonth = () => {
@@ -113,7 +132,11 @@ const CalendarWrapper: FC = () => {
         className="w-full max-w-md"
       >
         <h3>Escala em {format(selectedDate, "dd/MM")}</h3>
-        <EmployeesAvailable employeeSchedules={filteredSchedulesByDay} />
+        <EmployeesAvailable
+          date={selectedDate}
+          employeeSchedules={filteredSchedulesByDay}
+          refetchDaysOff={() => refetchDaysOff()}
+        />
       </Modal>
     </>
   );
