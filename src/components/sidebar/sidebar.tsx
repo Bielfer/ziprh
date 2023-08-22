@@ -75,7 +75,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                         className="-m-2.5 p-2.5"
                         onClick={() => setSidebarOpen(false)}
                       >
-                        <span className="sr-only">Fechar sidebar</span>
+                        <span className="sr-only">Fechar barra lateral</span>
                         <XMarkIcon
                           className="h-6 w-6 text-white"
                           aria-hidden="true"
@@ -99,7 +99,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                                 <Link
                                   href={item.href}
                                   className={cn(
-                                    pathname === item.href
+                                    pathname.includes(item.href)
                                       ? "bg-gray-50 text-primary-600"
                                       : "text-gray-700 hover:bg-gray-50 hover:text-primary-600",
                                     "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
@@ -107,7 +107,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                                 >
                                   <item.icon
                                     className={cn(
-                                      pathname === item.href
+                                      pathname.includes(item.href)
                                         ? "text-primary-600"
                                         : "text-gray-400 group-hover:text-primary-600",
                                       "h-6 w-6 shrink-0"
@@ -146,7 +146,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                         <Link
                           href={item.href}
                           className={cn(
-                            pathname === item.href
+                            pathname.includes(item.href)
                               ? "bg-gray-50 text-primary-600"
                               : "text-gray-700 hover:bg-gray-50 hover:text-primary-600",
                             "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
@@ -154,7 +154,7 @@ const Sidebar: FC<Props> = ({ children, items }) => {
                         >
                           <item.icon
                             className={cn(
-                              pathname === item.href
+                              pathname.includes(item.href)
                                 ? "text-primary-600"
                                 : "text-gray-400 group-hover:text-primary-600",
                               "h-6 w-6 shrink-0"
