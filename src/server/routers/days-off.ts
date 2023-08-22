@@ -4,21 +4,26 @@ import { hasOrganization, isRole } from "../middlewares";
 import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { TRPCError } from "@trpc/server";
-import { endOfDay, startOfDay } from "date-fns";
 
 export const dayOffRouter = router({
   getMany: privateProcedure
     .use(hasOrganization)
-    .input(z.object({ date: z.date(), userId: z.string().optional() }))
+    .input(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date(),
+        userId: z.string().optional(),
+      })
+    )
     .query(async ({ input }) => {
-      const { date, userId } = input;
+      const { startDate, endDate, userId } = input;
 
       const [daysOff, error] = await tryCatch(
         prisma.dayOff.findMany({
           where: {
             date: {
-              lte: endOfDay(date),
-              gte: startOfDay(date),
+              lte: endDate,
+              gte: startDate,
             },
             ...(!!userId && { userId }),
           },
