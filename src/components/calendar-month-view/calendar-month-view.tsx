@@ -17,6 +17,7 @@ type Props = {
   goToNextMonth: () => void;
   goToPreviousMonth: () => void;
   date: Date;
+  exceedingMessage?: string;
 };
 
 const CalendarMonthView: FC<Props> = ({
@@ -25,6 +26,7 @@ const CalendarMonthView: FC<Props> = ({
   goToNextMonth,
   goToPreviousMonth,
   date,
+  exceedingMessage = "",
 }) => {
   return (
     <div className="lg:flex lg:h-full lg:flex-col">
@@ -114,7 +116,7 @@ const CalendarMonthView: FC<Props> = ({
                       ))}
                       {day.events.length > 2 && (
                         <li className="text-gray-500">
-                          + {day.events.length - 2} pontos
+                          + {day.events.length - 2} {exceedingMessage}
                         </li>
                       )}
                     </ol>

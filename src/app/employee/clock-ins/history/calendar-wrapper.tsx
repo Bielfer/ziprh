@@ -74,6 +74,7 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
           }}
           goToNextMonth={goToNextMonth}
           goToPreviousMonth={goToPreviousMonth}
+          exceedingMessage="pontos"
         />
       </LoadingWrapper>
       <Modal
