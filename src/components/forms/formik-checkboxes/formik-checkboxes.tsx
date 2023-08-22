@@ -30,6 +30,7 @@ const FormikCheckbox: FC<Props> = ({
     <div className={cn("flex flex-wrap gap-x-3", className)}>
       {options.map((option) => (
         <button
+          type="button"
           key={option.value}
           className={cn(
             "flex cursor-pointer items-center justify-center",
