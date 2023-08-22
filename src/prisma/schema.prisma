@@ -16,3 +16,21 @@ model ClockIn {
   userId         String
   organizationId String
 }
+
+model EmployeeSchedule {
+  id        Int      @id @default(autoincrement())
+  beginning String
+  end       String
+  sunday    Boolean
+  monday    Boolean
+  tuesday   Boolean
+  wednesday Boolean
+  thursday  Boolean
+  friday    Boolean
+  saturday  Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId         String
+  organizationId String
+}
