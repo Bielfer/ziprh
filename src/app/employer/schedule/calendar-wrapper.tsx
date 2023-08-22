@@ -25,8 +25,6 @@ const CalendarWrapper: FC = () => {
       endDate: endOfMonth(selectedDate),
     });
 
-  console.log(daysOff);
-
   const days = useMemo(
     () =>
       generateMonth(selectedDate).map((day) => {
