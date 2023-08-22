@@ -35,7 +35,7 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
       clockIns
         ?.filter((clockIn) => isSameDay(clockIn.punchTime, day))
         .map((item, idx) => ({
-          time: item.punchTime,
+          time: format(item.punchTime, "H:mm"),
           name: `Ponto ${idx + 1}`,
         })) ?? [],
   }));

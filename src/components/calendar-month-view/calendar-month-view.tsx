@@ -8,12 +8,11 @@ import {
   getYear,
   isSameMonth,
   isToday as getIsToday,
-  format,
 } from "date-fns";
 import { dayAbbreviations, monthNames } from "~/constants/dates";
 
 type Props = {
-  days: { time: Date; events: { name: string; time: Date }[] }[];
+  days: { time: Date; events: { name: string; time: string }[] }[];
   onDayClick?: (day: Date) => void;
   goToNextMonth: () => void;
   goToPreviousMonth: () => void;
@@ -105,10 +104,10 @@ const CalendarMonthView: FC<Props> = ({
                               {event.name}
                             </p>
                             <time
-                              dateTime={event.time.toDateString()}
+                              dateTime={event.time}
                               className="ml-3 hidden flex-none text-gray-500 xl:block"
                             >
-                              {format(event.time, "H:mm")}
+                              {event.time}
                             </time>
                           </div>
                         </li>

@@ -2,7 +2,13 @@
 import { useState, type FC } from "react";
 import { trpc } from "~/services/trpc";
 import { generateMonth } from "~/helpers/dates";
-import { addMonths, endOfMonth, isSameDay, startOfMonth } from "date-fns";
+import {
+  addMonths,
+  endOfMonth,
+  format,
+  isSameDay,
+  startOfMonth,
+} from "date-fns";
 import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import FormClockIn from "~/components/forms/clock-in";
@@ -31,7 +37,7 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
       clockIns
         ?.filter((clockIn) => isSameDay(clockIn.punchTime, day))
         .map((item, idx) => ({
-          time: item.punchTime,
+          time: format(item.punchTime, "H:mm"),
           name: `Ponto ${idx + 1}`,
         })) ?? [],
   }));
