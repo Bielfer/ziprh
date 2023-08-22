@@ -6,6 +6,7 @@ import { type EmployeeSchedule } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { clerkClient } from "@clerk/nextjs";
 import { type OrganizationMembership } from "@clerk/nextjs/dist/types/server";
+import { isRole } from "../middlewares";
 
 const formatDailySchedule = (schedule: {
   days: number[];
@@ -119,6 +120,7 @@ export const schedulesRouter = router({
       return employeeSchedules;
     }),
   upsertMany: privateProcedure
+    .use(isRole("admin"))
     .input(
       z.object({
         employeeSchedules: z
