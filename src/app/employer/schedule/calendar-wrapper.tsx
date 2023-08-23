@@ -14,6 +14,11 @@ import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import CalendarMonthView from "~/components/calendar-month-view";
 import EmployeesAvailable from "./employees-available";
+import EmptyState from "~/components/empty-state";
+import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import MyLink from "~/components/my-link";
+import { paths } from "~/constants/paths";
+import { PlusIcon } from "@heroicons/react/20/solid";
 
 const CalendarWrapper: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -112,17 +117,35 @@ const CalendarWrapper: FC = () => {
   return (
     <>
       <LoadingWrapper className="py-10" isLoading={isLoading}>
-        <CalendarMonthView
-          date={selectedDate}
-          days={days}
-          onDayClick={(day) => {
-            setIsDaysOffOpen(true);
-            setSelectedDate(day);
-          }}
-          goToNextMonth={goToNextMonth}
-          goToPreviousMonth={goToPreviousMonth}
-          exceedingMessage="funcionários"
-        />
+        {schedules && schedules.length > 0 ? (
+          <CalendarMonthView
+            date={selectedDate}
+            days={days}
+            onDayClick={(day) => {
+              setIsDaysOffOpen(true);
+              setSelectedDate(day);
+            }}
+            goToNextMonth={goToNextMonth}
+            goToPreviousMonth={goToPreviousMonth}
+            exceedingMessage="funcionários"
+          />
+        ) : (
+          <EmptyState
+            className="mt-10"
+            icon={CalendarDaysIcon}
+            title="Você ainda não fez a escala de nenhum funcionário"
+            subtitle="Para criar a sua primeira escala basta clicar no botão abaixo"
+            buttonOrLink={
+              <MyLink
+                href={paths.employerEmployees}
+                variant="button-primary"
+                iconLeft={PlusIcon}
+              >
+                Criar Escala
+              </MyLink>
+            }
+          />
+        )}
       </LoadingWrapper>
       <Modal
         isOpen={isDaysOffOpen}
