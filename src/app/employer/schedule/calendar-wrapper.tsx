@@ -19,11 +19,17 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import MyLink from "~/components/my-link";
 import { paths } from "~/constants/paths";
 import { PlusIcon } from "@heroicons/react/20/solid";
+import { useOrganizationChange } from "~/hooks";
 
 const CalendarWrapper: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDaysOffOpen, setIsDaysOffOpen] = useState(false);
-  const { data: schedules, isLoading } = trpc.schedules.getMany.useQuery({});
+  const {
+    data: schedules,
+    isLoading,
+    refetch: refetchSchedules,
+  } = trpc.schedules.getMany.useQuery({});
+  useOrganizationChange(refetchSchedules);
   const { data: daysOff, refetch: refetchDaysOff } =
     trpc.dayOff.getMany.useQuery({
       startDate: startOfMonth(selectedDate),
