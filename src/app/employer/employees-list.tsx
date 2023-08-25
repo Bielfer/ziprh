@@ -7,16 +7,24 @@ import Container from "~/components/container";
 import Link from "next/link";
 import LoadingWrapper from "~/components/loading-wrapper";
 import EmptyState from "~/components/empty-state";
+import { trpc } from "~/services/trpc";
+import { endOfMonth, startOfMonth } from "date-fns";
 
 type Props = {
   href: (employeeId: string) => string;
 };
 
 const EmployeesList: FC<Props> = ({ href }) => {
+  const today = new Date();
   const { user } = useUser();
   const { membershipList } = useOrganization({
     membershipList: { limit: 20 },
   });
+  const { data: employeesHoursWorked } =
+    trpc.clockIns.employeesHoursWorked.useQuery({
+      startDate: startOfMonth(today),
+      endDate: endOfMonth(today),
+    });
 
   const filteredMembershipList = useMemo(
     () =>
@@ -59,7 +67,14 @@ const EmployeesList: FC<Props> = ({ href }) => {
                             aria-hidden="true"
                           />
                         </dt>
-                        <dd>40 Horas Trabalhadas no Mês</dd>
+                        {!!employeesHoursWorked && (
+                          <dd>
+                            {employeesHoursWorked[
+                              employee.publicUserData.userId ?? ""
+                            ] ?? 0}{" "}
+                            Horas Trabalhadas no Mês
+                          </dd>
+                        )}
                       </div>
                     </dl>
                   </div>

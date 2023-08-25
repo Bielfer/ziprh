@@ -6,7 +6,53 @@ import { z } from "zod";
 import { isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
 import { type ClockIn } from "@prisma/client";
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, isSameDay } from "date-fns";
+import { minutesToTime } from "~/helpers/times";
+
+const getEmployeesHoursWorked = (clockIns: ClockIn[]) => {
+  const clockInsByEmployee: Record<string, ClockIn[]> = {};
+
+  for (const clockIn of clockIns) {
+    const { userId } = clockIn;
+
+    if (!clockInsByEmployee[userId]) {
+      clockInsByEmployee[userId] = [clockIn];
+      continue;
+    }
+
+    clockInsByEmployee[userId]?.push(clockIn);
+  }
+
+  const employeesHoursWorked: Record<string, string> = {};
+
+  for (const employee of Object.entries(clockInsByEmployee)) {
+    let minutesWorked = 0;
+    const [userId, employeeClockIns] = employee;
+    let previousPunchTime: Date | undefined = undefined;
+
+    for (const clockIn of employeeClockIns) {
+      let punchTimesInDay = 2;
+      const { punchTime } = clockIn;
+
+      if (isSameDay(punchTime, previousPunchTime ?? new Date(1999))) {
+        if (punchTimesInDay % 2 === 0)
+          minutesWorked += differenceInMinutes(
+            punchTime,
+            previousPunchTime ?? new Date(1999)
+          );
+
+        punchTimesInDay++;
+      }
+
+      punchTimesInDay = 0;
+      previousPunchTime = punchTime;
+    }
+
+    employeesHoursWorked[userId] = minutesToTime(minutesWorked);
+  }
+
+  return employeesHoursWorked;
+};
 
 export const clockInsRouter = router({
   getMany: privateProcedure
@@ -42,6 +88,39 @@ export const clockInsRouter = router({
       if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
 
       return clockIns;
+    }),
+  employeesHoursWorked: privateProcedure
+    .input(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date(),
+        userId: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { startDate, endDate, userId } = input;
+
+      const [clockIns, error] = await tryCatch(
+        prisma.clockIn.findMany({
+          where: {
+            punchTime: {
+              gte: startDate,
+              lte: endDate,
+            },
+            ...(userId && { userId }),
+          },
+          orderBy: {
+            punchTime: "asc",
+          },
+        })
+      );
+
+      if (error ?? !clockIns)
+        throw new TRPCError({ code: "BAD_REQUEST", message: error });
+
+      const employeesHoursWorked = getEmployeesHoursWorked(clockIns);
+
+      return employeesHoursWorked;
     }),
   employeePunch: privateProcedure
     .use(isRole(roles.basicMember))
