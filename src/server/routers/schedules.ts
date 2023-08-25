@@ -159,7 +159,7 @@ export const schedulesRouter = router({
 
             const savedClockIn = await tx.employeeSchedule.upsert({
               where: { id: schedule.id },
-              update: dailySchedule,
+              update: { ...dailySchedule, beginning, end },
               create: {
                 ...dailySchedule,
                 userId: employeeId,
