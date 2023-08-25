@@ -1,5 +1,7 @@
 const paths = {
   home: "/",
+  pricing: "/#pricing",
+  features: "/#features",
   signIn: "/sign-in",
   signUp: "/sign-up",
   employerSchedule: "/employer/schedule",
