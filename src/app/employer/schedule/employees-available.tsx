@@ -90,7 +90,18 @@ const EmployeesAvailable: FC<Props> = ({
                 onClick={async () => {
                   const id = daysOff.find(
                     (dayOff) => dayOff.userId === employeeSchedule.employeeId
-                  )?.id as number;
+                  )?.id;
+
+                  if (!id) {
+                    addToast({
+                      type: "error",
+                      content:
+                        "Falha ao retirar folga, tente novamente após recarregar a página",
+                      duration: 5000,
+                    });
+                    return;
+                  }
+
                   const [, error] = await tryCatch(deleteDayOff({ id }));
 
                   if (error) {
