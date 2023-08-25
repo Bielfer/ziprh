@@ -48,11 +48,13 @@ const EmployeesList: FC<Props> = ({ href }) => {
                     },
                   }}
                 >
-                  <img
-                    src={employee.publicUserData.imageUrl}
-                    alt=""
-                    className="h-14 w-14 flex-none rounded-full"
-                  />
+                  {employee.publicUserData.imageUrl && (
+                    <img
+                      src={employee.publicUserData.imageUrl}
+                      alt=""
+                      className="h-14 w-14 flex-none rounded-full"
+                    />
+                  )}
                   <div className="flex-auto">
                     <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
                       {employee.publicUserData.firstName}{" "}

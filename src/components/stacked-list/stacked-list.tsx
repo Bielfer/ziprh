@@ -19,11 +19,13 @@ const StackedList: FC<Props> = ({ items }) => {
           className="flex items-center justify-between gap-x-6 py-5"
         >
           <div className="flex min-w-0 gap-x-4">
-            <img
-              className="h-12 w-12 flex-none rounded-full bg-gray-50"
-              src={item.imageUrl}
-              alt=""
-            />
+            {item.imageUrl && (
+              <img
+                className="h-12 w-12 flex-none rounded-full bg-gray-50"
+                src={item.imageUrl}
+                alt=""
+              />
+            )}
             <div className="min-w-0 flex-auto">
               <p className="text-sm font-semibold leading-6 text-gray-900">
                 {item.name}
