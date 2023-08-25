@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import { type FC } from "react";
+import CalendarWrapper from "./calendar-wrapper";
 
 export const metadata: Metadata = {
   title: "Sua Escala | ZipRH",
@@ -10,6 +11,7 @@ const EmployeeAvailabilities: FC = () => {
   return (
     <>
       <h1>Sua Escala</h1>
+      <CalendarWrapper />
     </>
   );
 };
