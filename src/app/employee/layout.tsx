@@ -14,11 +14,12 @@ const EmployeeLayout: FC<Props> = ({ children }) => {
   return (
     <SidebarWrapper>
       {!orgId ? (
-        <div className="pt-10">
+        <div className="pt-16">
           <EmptyState
+            className="mx-auto max-w-md"
             icon={UserGroupIcon}
             title="Nenhuma organização escolhida!"
-            subtitle="Para escolher ou criar um organização basta clicar no botão espaço pessoal à esquerda!"
+            subtitle="Para escolher uma organização basta clicar no botão nenhuma organização selecionada. Se nenhuma estiver disponível, peça para seu gestor enviar outro convite"
           />
         </div>
       ) : (
