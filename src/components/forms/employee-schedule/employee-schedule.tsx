@@ -31,14 +31,15 @@ const FormEmployeeSchedule: FC<Props> = ({ employeeId }) => {
     trpc.schedules.upsertMany.useMutation();
 
   const initialValues = {
-    employeeSchedules: employeeSchedules?.map(
-      ({ id, beginning, end, days }) => ({
-        id,
-        beginning,
-        end,
-        days,
-      })
-    ) ?? [{ id: -1, beginning: "", end: "", days: [] }],
+    employeeSchedules:
+      !!employeeSchedules && employeeSchedules.length > 0
+        ? employeeSchedules?.map(({ id, beginning, end, days }) => ({
+            id,
+            beginning,
+            end,
+            days,
+          }))
+        : [{ id: -1, beginning: "", end: "", days: [] }],
   };
 
   const validationSchema = z.object({
