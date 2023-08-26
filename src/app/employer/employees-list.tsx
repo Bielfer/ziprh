@@ -2,7 +2,7 @@
 import { useMemo, type FC } from "react";
 import { ChevronRightIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { ClockIcon } from "@heroicons/react/24/outline";
+import { ClockIcon } from "@heroicons/react/20/solid";
 import Container from "~/components/container";
 import Link from "next/link";
 import LoadingWrapper from "~/components/loading-wrapper";
@@ -69,14 +69,14 @@ const EmployeesList: FC<Props> = ({ href }) => {
                             aria-hidden="true"
                           />
                         </dt>
-                        {!!employeesHoursWorked && (
-                          <dd>
-                            {employeesHoursWorked[
+                        <dd>
+                          {(!!employeesHoursWorked &&
+                            employeesHoursWorked[
                               employee.publicUserData.userId ?? ""
-                            ] ?? 0}{" "}
-                            Horas Trabalhadas no Mês
-                          </dd>
-                        )}
+                            ]) ??
+                            0}{" "}
+                          Horas Trabalhadas no Mês
+                        </dd>
                       </div>
                     </dl>
                   </div>
