@@ -2,6 +2,7 @@ const paths = {
   home: "/",
   pricing: "/#pricing",
   features: "/#features",
+  chooseRole: "/choose-role",
   signIn: "/sign-in",
   signUp: "/sign-up",
   employerSchedule: "/employer/schedule",

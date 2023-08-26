@@ -21,8 +21,8 @@ const SignInPage: FC<Props> = ({ searchParams }) => {
   return (
     <div className="flex h-screen items-center justify-center">
       <SignIn
-        afterSignInUrl={afterSignInUrl ?? paths.home}
-        afterSignUpUrl={afterSignUpUrl ?? paths.home}
+        afterSignInUrl={afterSignInUrl ?? paths.chooseRole}
+        afterSignUpUrl={afterSignUpUrl ?? paths.chooseRole}
       />
     </div>
   );

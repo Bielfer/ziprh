@@ -20,8 +20,8 @@ const SignUpPage: FC<Props> = ({ params }) => {
   return (
     <div className="flex h-screen items-center justify-center">
       <SignUp
-        afterSignInUrl={params.afterSignInUrl ?? paths.home}
-        afterSignUpUrl={params.afterSignUpUrl ?? paths.home}
+        afterSignInUrl={params.afterSignInUrl ?? paths.chooseRole}
+        afterSignUpUrl={params.afterSignUpUrl ?? paths.chooseRole}
       />
     </div>
   );
