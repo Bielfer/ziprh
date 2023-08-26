@@ -1,5 +1,5 @@
 "use client";
-import { Fragment } from "react";
+import { type FC, Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import MyLink from "~/components/my-link";
@@ -18,7 +18,47 @@ const links = [
   },
 ];
 
-const MobileNavigation = () => (
+type Props = {
+  userId: string | null;
+};
+
+const Header: FC<Props> = ({ userId }) => (
+  <header className="py-10">
+    <Container>
+      <nav className="relative z-50 text-sm">
+        <ul className="flex items-center">
+          <li>
+            <Logo />
+          </li>
+          {links.map((link) => (
+            <li key={link.route} className="ml-6 hidden first:ml-12 md:block">
+              <MyLink href={link.route} variant="secondary">
+                {link.text}
+              </MyLink>
+            </li>
+          ))}
+
+          <li className="ml-auto hidden md:block">
+            {userId ? (
+              <MyLink href={paths.chooseRole} variant="button-secondary">
+                Dashboard
+              </MyLink>
+            ) : (
+              <MyLink href={paths.signIn} variant="button-secondary">
+                Fazer Login
+              </MyLink>
+            )}
+          </li>
+          <li className="-mr-1 ml-auto md:hidden">
+            <MobileNavigation userId={userId} />
+          </li>
+        </ul>
+      </nav>
+    </Container>
+  </header>
+);
+
+const MobileNavigation: FC<Props> = ({ userId }) => (
   <Popover>
     {({ open, close }) => (
       <>
@@ -82,9 +122,15 @@ const MobileNavigation = () => (
                 </li>
               ))}
               <li className="border-t border-slate-300/40 pt-4">
-                <MyLink href={paths.signIn} className="block w-full">
-                  Fazer Login
-                </MyLink>
+                {userId ? (
+                  <MyLink href={paths.chooseRole} className="block w-full">
+                    Dashboard
+                  </MyLink>
+                ) : (
+                  <MyLink href={paths.signIn} className="block w-full">
+                    Fazer Login
+                  </MyLink>
+                )}
               </li>
             </Popover.Panel>
           </Transition.Child>
@@ -92,36 +138,6 @@ const MobileNavigation = () => (
       </>
     )}
   </Popover>
-);
-
-const Header = () => (
-  <header className="py-10">
-    <Container>
-      <nav className="relative z-50 text-sm">
-        <ul className="flex items-center">
-          <li>
-            <Logo />
-          </li>
-          {links.map((link) => (
-            <li key={link.route} className="ml-6 hidden first:ml-12 md:block">
-              <MyLink href={link.route} variant="secondary">
-                {link.text}
-              </MyLink>
-            </li>
-          ))}
-
-          <li className="ml-auto hidden md:block">
-            <MyLink href={paths.signIn} variant="button-secondary">
-              Fazer Login
-            </MyLink>
-          </li>
-          <li className="-mr-1 ml-auto md:hidden">
-            <MobileNavigation />
-          </li>
-        </ul>
-      </nav>
-    </Container>
-  </header>
 );
 
 export default Header;

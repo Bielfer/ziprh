@@ -27,7 +27,7 @@ const Home: FC = () => {
 
   return (
     <>
-      <Header />
+      <Header userId={userId} />
       <main>
         <Hero />
         <PrimaryFeatures />
