@@ -4,6 +4,7 @@ import ClientProviders from "~/app/client-providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { ptBR } from "@clerk/localizations";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ const RootLayout: FC<Props> = ({ children }) => {
         </head>
         <body>
           <ClientProviders>{children}</ClientProviders>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
