@@ -6,6 +6,7 @@ import { useState } from "react";
 import superjson from "superjson";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { trpc } from "~/services/trpc";
+import { env } from "~/env.mjs";
 
 export const TrpcProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -17,9 +18,7 @@ export const TrpcProvider: React.FC<{ children: React.ReactNode }> = ({
       })
   );
 
-  const url = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000/api/trpc/";
+  const url = `${env.NEXT_PUBLIC_APP_URL}/api/trpc`;
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
