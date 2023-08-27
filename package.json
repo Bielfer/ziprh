@@ -8,7 +8,8 @@
     "lint": "next lint",
     "start": "next start",
     "db-push": "pnpm dlx prisma db push",
-    "studio": "npx prisma studio --browser=none"
+    "studio": "npx prisma studio --browser=none",
+    "stripe-listen": "stripe listen --forward-to http://localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
     "@clerk/localizations": "^1.24.1",
