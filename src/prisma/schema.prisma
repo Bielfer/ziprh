@@ -44,3 +44,26 @@ model DayOff {
   userId         String
   organizationId String
 }
+
+model Subscription {
+  id             Int                @id @default(autoincrement())
+  organizationId String             @unique
+  customerId     String
+  status         SubscriptionStatus
+  renewAt        DateTime
+  userId         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  unpaid
+  canceled
+  incomplete
+  incomplete_expired
+  trialing
+  paused
+}
