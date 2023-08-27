@@ -2,13 +2,19 @@ import type { FC, ReactNode } from "react";
 import SidebarWrapper from "./sidebar-wrapper";
 import { CreateOrganization, auth } from "@clerk/nextjs";
 import { paths } from "~/constants/paths";
+import { handleFirstLogin } from "~/actions/employer";
+import { redirect } from "next/navigation";
 
 type Props = {
   children: ReactNode;
 };
 
-const EmployerLayout: FC<Props> = ({ children }) => {
-  const { orgId } = auth();
+const EmployerLayout: FC<Props> = async ({ children }) => {
+  const { orgId, userId, orgRole } = auth();
+
+  if (orgRole !== "admin") redirect(paths.employeeSchedule);
+
+  if (orgId && userId) await handleFirstLogin({ orgId, userId });
 
   return (
     <SidebarWrapper>
