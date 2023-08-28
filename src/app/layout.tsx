@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { ptBR } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/react";
+import Crisp from "./crisp";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ const RootLayout: FC<Props> = ({ children }) => {
         <body>
           <ClientProviders>{children}</ClientProviders>
           <Analytics />
+          <Crisp />
         </body>
       </html>
     </ClerkProvider>
