@@ -17,6 +17,7 @@ const paths = {
   employeeClockIns: "/employee/clock-ins",
   employeeClockInsHistory: "/employee/clock-ins/history",
   userEdit: "/user/edit",
+  unauthorized: "/unauthorized",
 } as const;
 
 export { paths };
