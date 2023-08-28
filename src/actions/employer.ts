@@ -1,43 +1,58 @@
+import { type Subscription } from "@prisma/client";
 import { addDays } from "date-fns";
 import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { stripe } from "~/services/stripe";
 
-export const handleFirstLogin = async ({
-  orgId,
+export const findSubscription = async ({
   userId,
+  orgId,
 }: {
-  orgId: string;
   userId: string;
+  orgId: string;
 }) => {
   const [subscriptions, errorFindingSubscription] = await tryCatch(
     prisma.subscription.findMany({ where: { userId } })
   );
 
   if (errorFindingSubscription) {
-    console.log(errorFindingSubscription);
+    console.error(errorFindingSubscription);
     return;
   }
 
-  if (
-    subscriptions?.find((subscription) => subscription.organizationId === orgId)
-  )
-    return;
+  return {
+    subscription: subscriptions?.find(
+      (subscription) => subscription.organizationId === orgId
+    ),
+    customerId: subscriptions?.[0]?.customerId,
+  };
+};
 
-  let customerId = subscriptions?.[0]?.customerId;
+export const handleFirstOrganizationLogin = async ({
+  orgId,
+  userId,
+  subscription,
+  customerId,
+}: {
+  orgId: string;
+  userId: string;
+  subscription?: Subscription | null;
+  customerId?: string;
+}) => {
+  if (!!subscription) return subscription;
 
   if (!customerId) {
     const [customer, errorCustomer] = await tryCatch(stripe.customers.create());
 
     if (errorCustomer || !customer) {
-      console.log(errorCustomer);
+      console.error(errorCustomer);
       return;
     }
 
     customerId = customer.id;
   }
 
-  const [, errorSubscription] = await tryCatch(
+  const [createdSubscription, errorSubscription] = await tryCatch(
     prisma.subscription.create({
       data: {
         userId,
@@ -49,5 +64,7 @@ export const handleFirstLogin = async ({
     })
   );
 
-  if (errorSubscription) console.log(errorSubscription);
+  if (errorSubscription) console.error(errorSubscription);
+
+  return createdSubscription;
 };
