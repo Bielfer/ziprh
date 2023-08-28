@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import BannerWrapper from "./banner-wrapper";
 import { type Subscription } from "@prisma/client";
 import SubscriptionWrapper from "../subscription-wrapper";
+import { roles } from "~/constants/roles";
 
 type Props = {
   children: ReactNode;
@@ -18,7 +19,7 @@ type Props = {
 const EmployerLayout: FC<Props> = async ({ children }) => {
   const { orgId, userId, orgRole } = auth();
 
-  if (orgRole !== "admin") redirect(paths.employeeSchedule);
+  if (orgRole !== roles.admin) redirect(paths.employeeSchedule);
 
   let subscription: Subscription | undefined | null;
 
