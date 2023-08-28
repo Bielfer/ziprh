@@ -64,7 +64,11 @@ const dailyScheduleToNumbers = ({
     end,
     organizationId,
     userId,
-    userFullName: `${member?.publicUserData?.firstName} ${member?.publicUserData?.lastName}`,
+    userFullName: member?.publicUserData?.firstName
+      ? `${member?.publicUserData?.firstName} ${
+          member?.publicUserData?.lastName ?? ""
+        }`
+      : "Sem Nome",
     userImage: member?.publicUserData?.imageUrl,
     days: Object.entries(days)
       .filter(([, value]) => value)
