@@ -61,6 +61,33 @@ export const POST = async (req: Request) => {
           renewAt: fromUnixTime(subscription.current_period_end),
         },
       });
+
+      break;
+    case "customer.subscription.resumed":
+      subscription = event.data.object;
+      status = subscription.status;
+
+      await prisma.subscription.update({
+        where: { id: parseInt(subscription.metadata.subscriptionId) },
+        data: {
+          status,
+          renewAt: fromUnixTime(subscription.current_period_end),
+        },
+      });
+
+      break;
+    case "customer.subscription.paused":
+      subscription = event.data.object;
+      status = subscription.status;
+
+      await prisma.subscription.update({
+        where: { id: parseInt(subscription.metadata.subscriptionId) },
+        data: {
+          status,
+          renewAt: fromUnixTime(subscription.current_period_end),
+        },
+      });
+
       break;
     default:
       console.log(`Unhandled event type ${event.type}.`);
