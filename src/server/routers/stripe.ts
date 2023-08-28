@@ -74,39 +74,43 @@ export const stripeRouter = router({
 
       return session;
     }),
-  createPortalSession: privateProcedure.mutation(async ({ ctx }) => {
-    const { orgId } = ctx.auth;
+  createPortalSession: privateProcedure
+    .input(z.object({ returnUrl: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { returnUrl } = input;
+      const { orgId } = ctx.auth;
 
-    const [subscription, errorSubscription] = await tryCatch(
-      prisma.subscription.findFirst({
-        where: {
-          organizationId: orgId,
-        },
-      })
-    );
+      const [subscription, errorSubscription] = await tryCatch(
+        prisma.subscription.findFirst({
+          where: {
+            organizationId: orgId,
+          },
+        })
+      );
 
-    if (errorSubscription || !subscription)
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: errorSubscription ?? "No subscription for this organization!",
-      });
+      if (errorSubscription || !subscription)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            errorSubscription ?? "No subscription for this organization!",
+        });
 
-    const [portalSession, errorPortalSession] = await tryCatch(
-      stripe.billingPortal.sessions.create({
-        customer: subscription.customerId,
-        return_url: `${appUrl}${paths.employerSubscriptionSuccess}`,
-        locale: "pt-BR",
-      })
-    );
+      const [portalSession, errorPortalSession] = await tryCatch(
+        stripe.billingPortal.sessions.create({
+          customer: subscription.customerId,
+          return_url: `${appUrl}${returnUrl}`,
+          locale: "pt-BR",
+        })
+      );
 
-    if (errorPortalSession)
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: errorPortalSession,
-      });
+      if (errorPortalSession)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: errorPortalSession,
+        });
 
-    return portalSession;
-  }),
+      return portalSession;
+    }),
 });
 
 export type StripeRouter = typeof stripeRouter;
