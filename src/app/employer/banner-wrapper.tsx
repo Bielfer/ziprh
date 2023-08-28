@@ -8,6 +8,7 @@ import Banner from "~/components/banner";
 import Spinner from "~/components/spinner";
 import { useToast } from "~/components/toast";
 import { gracePeriod } from "~/constants/payments";
+import { tryCatch } from "~/helpers/try-catch";
 import { trpc } from "~/services/trpc";
 
 type Props = {
@@ -48,16 +49,21 @@ const BannerWrapper: FC<Props> = ({ subscription }) => {
       | Stripe.Response<Stripe.Checkout.Session>
       | Stripe.Response<Stripe.BillingPortal.Session>
       | null;
+    let error;
 
     if (isTrialing) {
-      session = await createCheckoutSession({
-        cancelUrl: pathname,
-      });
+      [session, error] = await tryCatch(
+        createCheckoutSession({
+          cancelUrl: pathname,
+        })
+      );
     } else {
-      session = await createPortalSession({ returnUrl: pathname });
+      [session, error] = await tryCatch(
+        createPortalSession({ returnUrl: pathname })
+      );
     }
 
-    if (!session || !session.url) {
+    if (error || !session || !session.url) {
       addToast({
         type: "error",
         content:
