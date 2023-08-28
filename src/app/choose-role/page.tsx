@@ -21,10 +21,16 @@ const ChooseRolePage: FC = () => {
     <div className="flex h-screen items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-y-6 rounded-xl border p-10 shadow">
         <h2>Escolha seu papel na organização</h2>
-        <MyLink href={paths.employerSchedule} variant="button-primary">
+        <MyLink
+          href={{ pathname: paths.userEdit, query: { isEmployee: "no" } }}
+          variant="button-primary"
+        >
           Sou Gestor
         </MyLink>
-        <MyLink href={paths.employeeSchedule} variant="button-secondary">
+        <MyLink
+          href={{ pathname: paths.userEdit, query: { isEmployee: "yes" } }}
+          variant="button-secondary"
+        >
           Sou Funcionário
         </MyLink>
       </div>
