@@ -19,7 +19,7 @@ type Props = {
 const EmployerLayout: FC<Props> = async ({ children }) => {
   const { orgId, userId, orgRole } = auth();
 
-  if (orgRole !== roles.admin) redirect(paths.employeeSchedule);
+  if (orgId && orgRole !== roles.admin) redirect(paths.employeeSchedule);
 
   let subscription: Subscription | undefined | null;
 

@@ -17,7 +17,7 @@ type Props = {
 const EmployeeLayout: FC<Props> = async ({ children }) => {
   const { orgId, orgRole } = auth();
 
-  if (orgRole !== roles.basicMember) redirect(paths.employerSchedule);
+  if (orgId && orgRole !== roles.basicMember) redirect(paths.employerSchedule);
 
   const subscription = await findSubscription({ orgId: orgId ?? "" });
 
