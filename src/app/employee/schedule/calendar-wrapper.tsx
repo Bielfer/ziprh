@@ -22,14 +22,18 @@ import {
 import { useOrganizationChange } from "~/hooks";
 import FeedIcons from "~/components/feed-icons";
 
-const CalendarWrapper: FC = () => {
+type Props = {
+  userId: string;
+};
+
+const CalendarWrapper: FC<Props> = ({ userId }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDaysOffOpen, setIsDaysOffOpen] = useState(false);
   const {
     data: schedules,
     isLoading,
     refetch: refetchSchedules,
-  } = trpc.schedules.getMany.useQuery({});
+  } = trpc.schedules.getMany.useQuery({ userId });
   useOrganizationChange(refetchSchedules);
   const { data: daysOff } = trpc.dayOff.getMany.useQuery({
     startDate: startOfMonth(selectedDate),

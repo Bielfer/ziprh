@@ -1,6 +1,9 @@
 import { type Metadata } from "next";
 import { type FC } from "react";
 import CalendarWrapper from "./calendar-wrapper";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+import { paths } from "~/constants/paths";
 
 export const metadata: Metadata = {
   title: "Sua Escala | ZipRH",
@@ -8,10 +11,14 @@ export const metadata: Metadata = {
 };
 
 const EmployeeAvailabilities: FC = () => {
+  const { userId } = auth();
+
+  if (!userId) redirect(paths.unauthorized);
+
   return (
     <>
       <h1>Sua Escala</h1>
-      <CalendarWrapper />
+      <CalendarWrapper userId={userId} />
     </>
   );
 };
