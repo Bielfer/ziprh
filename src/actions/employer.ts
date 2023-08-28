@@ -1,5 +1,6 @@
 import { type Subscription } from "@prisma/client";
 import { addDays } from "date-fns";
+import { trialPeriod } from "~/constants/payments";
 import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { stripe } from "~/services/stripe";
@@ -58,13 +59,16 @@ export const handleFirstOrganizationLogin = async ({
         userId,
         customerId,
         organizationId: orgId,
-        renewAt: addDays(new Date(), 7),
+        renewAt: addDays(new Date(), trialPeriod),
         status: "trialing",
       },
     })
   );
 
-  if (errorSubscription) console.error(errorSubscription);
+  if (errorSubscription) {
+    console.error(errorSubscription);
+    return;
+  }
 
   return createdSubscription;
 };
