@@ -14,8 +14,12 @@ export const generateMetadata = ({ searchParams }: Props) => {
   const { employeeName } = searchParams;
 
   return {
-    title: `Pontos batidos por ${employeeName} | ZipRH`,
-    description: `Veja todos os pontos que foram batidos por ${employeeName} no período de um mês`,
+    title: `Pontos batidos por ${
+      employeeName ?? "Funcionário sem Nome"
+    } | ZipRH`,
+    description: `Veja todos os pontos que foram batidos por ${
+      employeeName ?? "Funcionário sem Nome"
+    } no período de um mês`,
   };
 };
 
@@ -25,7 +29,7 @@ const ClockInByEmployee: FC<Props> = ({ searchParams, params }) => {
 
   return (
     <>
-      <h1>{employeeName}</h1>
+      <h1>{employeeName ?? "Funcionário sem Nome"}</h1>
       <CalendarWrapper userId={userId} />
     </>
   );

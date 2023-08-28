@@ -112,7 +112,7 @@ const CalendarWrapper: FC = () => {
         employeeSchedules.push({
           employeeId: schedule.userId,
           employeeImageUrl: schedule.userImage ?? "",
-          employeeName: schedule.userFullName,
+          employeeName: schedule.userFullName ?? null,
           schedule: `${schedule.beginning} - ${schedule.end}`,
         });
       });

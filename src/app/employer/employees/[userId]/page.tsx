@@ -15,8 +15,10 @@ export const generateMetadata = ({ searchParams }: Props) => {
   const { employeeName } = searchParams;
 
   return {
-    title: `Configurações de ${employeeName} | ZipRH`,
-    description: `Configure os dados de ${employeeName}`,
+    title: `Configurações de ${employeeName ?? "Funcionário sem Nome"} | ZipRH`,
+    description: `Configure os dados de ${
+      employeeName ?? "Funcionário sem Nome"
+    }`,
   };
 };
 
@@ -26,7 +28,7 @@ const EmployerEmployeeByUserId: FC<Props> = ({ params, searchParams }) => {
 
   return (
     <>
-      <h1>Configurações de {employeeName}</h1>
+      <h1>Configurações de {employeeName ?? "Funcionário sem Nome"}</h1>
       <Container smallerContainer className="pt-8">
         <FormEmployeeSchedule employeeId={userId} />
       </Container>

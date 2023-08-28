@@ -44,7 +44,11 @@ const EmployeesList: FC<Props> = ({ href }) => {
                   href={{
                     pathname: href(employee.publicUserData.userId ?? ""),
                     query: {
-                      employeeName: `${employee.publicUserData.firstName} ${employee.publicUserData.lastName}`,
+                      employeeName: employee.publicUserData.firstName
+                        ? `${employee.publicUserData.firstName} ${
+                            employee.publicUserData.lastName ?? ""
+                          }`
+                        : "Funcionário sem nome",
                     },
                   }}
                 >
@@ -57,8 +61,9 @@ const EmployeesList: FC<Props> = ({ href }) => {
                   )}
                   <div className="flex-auto">
                     <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-                      {employee.publicUserData.firstName}{" "}
-                      {employee.publicUserData.lastName}
+                      {employee.publicUserData.firstName ??
+                        "Funcionário sem nome"}{" "}
+                      {employee.publicUserData.lastName ?? ""}
                     </h3>
                     <dl className="mt-2 flex flex-col text-gray-500 xl:flex-row">
                       <div className="flex items-start space-x-3">
@@ -74,7 +79,7 @@ const EmployeesList: FC<Props> = ({ href }) => {
                             employeesHoursWorked[
                               employee.publicUserData.userId ?? ""
                             ]) ??
-                            0}{" "}
+                            "0:00"}{" "}
                           Horas Trabalhadas no Mês
                         </dd>
                       </div>

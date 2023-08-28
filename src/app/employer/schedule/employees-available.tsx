@@ -48,7 +48,7 @@ const EmployeesAvailable: FC<Props> = ({
           items={employeeSchedules.map((employeeSchedule) => ({
             id: employeeSchedule.employeeId,
             imageUrl: employeeSchedule.employeeImageUrl,
-            name: employeeSchedule.employeeName,
+            name: employeeSchedule.employeeName ?? "Funcionário sem nome",
             subName: employeeSchedule.schedule,
             onRight: !daysOff?.find(
               (dayOff) => dayOff.userId === employeeSchedule.employeeId
