@@ -16,7 +16,6 @@ const paths = {
   employeeSchedule: "/employee/schedule",
   employeeClockIns: "/employee/clock-ins",
   employeeClockInsHistory: "/employee/clock-ins/history",
-  userEdit: "/user/edit",
   unauthorized: "/unauthorized",
 } as const;
 
