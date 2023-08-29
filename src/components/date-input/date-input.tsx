@@ -1,10 +1,10 @@
-import { CalendarDaysIcon } from '@heroicons/react/20/solid';
-import clsx from 'clsx';
-import { format } from 'date-fns';
-import { type Dispatch, type FC, type SetStateAction, useState } from 'react';
-import InputLayout from '~/components/input-layout';
-import Modal from '~/components/modal';
-import Calendar from './calendar';
+import { CalendarDaysIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
+import { format } from "date-fns";
+import { type Dispatch, type FC, type SetStateAction, useState } from "react";
+import InputLayout from "~/components/input-layout";
+import Modal from "~/components/modal";
+import Calendar from "./calendar";
 
 type Props = {
   date: Date;
@@ -15,6 +15,7 @@ type Props = {
   hint?: string;
   label?: string;
   disabled?: boolean;
+  help?: string;
 };
 
 const DateInput: FC<Props> = ({
@@ -26,6 +27,7 @@ const DateInput: FC<Props> = ({
   hint,
   label,
   disabled,
+  help,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,20 +39,21 @@ const DateInput: FC<Props> = ({
         error={error}
         hint={hint}
         label={label}
+        help={help}
       >
         <button
           type="button"
           className={clsx(
-            'block w-full rounded-lg border py-2 pl-3 pr-10 text-left shadow-sm',
-            disabled && 'bg-gray-200 text-gray-600',
+            "block w-full rounded-lg border py-2 pl-3 pr-10 text-left shadow-sm",
+            disabled && "bg-gray-200 text-gray-600",
             !error
-              ? 'border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm'
-              : 'border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500 sm:text-sm'
+              ? "border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+              : "border-red-300 pr-10 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500 sm:text-sm"
           )}
           onClick={() => setIsOpen(true)}
           disabled={disabled}
         >
-          <span className="block truncate">{format(date, 'dd/MM/yyyy')}</span>
+          <span className="block truncate">{format(date, "dd/MM/yyyy")}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <CalendarDaysIcon
               className="h-5 w-5 text-gray-400"

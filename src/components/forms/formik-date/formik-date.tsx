@@ -1,8 +1,8 @@
 /* eslint @typescript-eslint/no-misused-promises:off */
-import { parseISO } from 'date-fns';
-import { useField } from 'formik';
-import type { FC } from 'react';
-import DateInput from '~/components/date-input';
+import { parseISO } from "date-fns";
+import { useField } from "formik";
+import type { FC } from "react";
+import DateInput from "~/components/date-input";
 
 type Props = {
   name: string;
@@ -10,21 +10,30 @@ type Props = {
   hint?: string;
   label?: string;
   disabled?: boolean;
+  help?: string;
 };
 
-const FormikDate: FC<Props> = ({ name, className, hint, label, disabled }) => {
+const FormikDate: FC<Props> = ({
+  name,
+  className,
+  hint,
+  label,
+  disabled,
+  help,
+}) => {
   const [{ value }, { touched, error }, { setValue }] = useField(name);
 
   return (
     <DateInput
       className={className}
       label={label}
-      date={typeof value === 'string' ? parseISO(value) : value}
+      date={typeof value === "string" ? parseISO(value) : value}
       setDate={setValue}
       name={name}
-      error={touched && error ? error : ''}
+      error={touched && error ? error : ""}
       hint={hint}
       disabled={disabled}
+      help={help}
     />
   );
 };

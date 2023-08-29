@@ -10,6 +10,7 @@ interface Props {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  help?: string;
 }
 
 const FormikNumber = ({
@@ -20,6 +21,7 @@ const FormikNumber = ({
   format = "default",
   placeholder,
   disabled,
+  help,
 }: Props) => {
   const [{ value }, { error, touched }, { setValue }] = useField(name);
   const [input, setInput] = useState(value);
@@ -47,6 +49,7 @@ const FormikNumber = ({
       placeholder={placeholder}
       disabled={disabled}
       name={name}
+      help={help}
     />
   );
 };
