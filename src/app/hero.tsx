@@ -19,9 +19,9 @@ const Hero = () => (
       </span>
     </h1>
     <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
-      A maioria dos sistemas de gerir funcionários são extremamente lentos,
-      antigos e caros. Nossa missão é ajudar o empreendedor brasileiro com seus
-      negócios
+      Sabemos que ficar controlando a escala e os pontos dos funcionários pode
+      ser uma tarefa muito maçante. Nossa missão é ajudar o empreendedor
+      brasileiro a ter mais tempo para focar naquilo que realmente importa
     </p>
     <div className="mt-10 flex justify-center space-x-6">
       <MyLink href={paths.signUp} variant="button-primary">
