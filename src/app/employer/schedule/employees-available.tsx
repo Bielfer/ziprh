@@ -38,14 +38,14 @@ const EmployeesAvailable: FC<Props> = ({
     startDate: startOfDay(date),
     endDate: endOfDay(date),
   });
-  const { mutateAsync: createDayOff, isLoading: isCreatingDayOff } =
-    trpc.dayOff.create.useMutation();
+  const { mutateAsync: upsertDayOff, isLoading: isCreatingDayOff } =
+    trpc.dayOff.upsert.useMutation();
   const { mutateAsync: deleteDayOff, isLoading: isDeletingDayOff } =
     trpc.dayOff.delete.useMutation();
 
   const handleCreateDayOff = async (employeeSchedule: EmployeeSchedule) => {
     const [, error] = await tryCatch(
-      createDayOff({
+      upsertDayOff({
         date,
         userId: employeeSchedule.employeeId,
       })

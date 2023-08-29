@@ -35,27 +35,33 @@ export const dayOffRouter = router({
 
       return daysOff;
     }),
-  create: privateProcedure
+  upsert: privateProcedure
     .use(isRole("admin"))
     .use(hasOrganization)
     .input(
       z.object({
-        userId: z.string(),
-        date: z.date(),
+        id: z.number().optional(),
+        userId: z.string().optional(),
+        date: z.date().optional(),
         type: z.enum(dayOffTypesValues).optional(),
         daysWorked: z.number().optional(),
         daysOff: z.number().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const { userId, id, ...filteredInput } = input;
       const { orgId } = ctx.auth;
 
       const [dayOff, error] = await tryCatch(
-        prisma.dayOff.create({
-          data: {
-            ...input,
+        prisma.dayOff.upsert({
+          where: { id: id ?? -1 },
+          create: {
+            ...filteredInput,
+            userId: userId ?? "",
+            date: filteredInput.date ?? new Date(1999),
             organizationId: orgId,
           },
+          update: filteredInput,
         })
       );
 
