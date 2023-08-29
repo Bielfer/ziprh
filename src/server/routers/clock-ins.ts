@@ -29,9 +29,9 @@ const getEmployeesHoursWorked = (clockIns: ClockIn[]) => {
     let minutesWorked = 0;
     const [userId, employeeClockIns] = employee;
     let previousPunchTime: Date | undefined = undefined;
+    let punchTimesInDay = 2;
 
     for (const clockIn of employeeClockIns) {
-      let punchTimesInDay = 2;
       const { punchTime } = clockIn;
 
       if (isSameDay(punchTime, previousPunchTime ?? new Date(1999))) {
@@ -42,9 +42,10 @@ const getEmployeesHoursWorked = (clockIns: ClockIn[]) => {
           );
 
         punchTimesInDay++;
+      } else {
+        punchTimesInDay = 2;
       }
 
-      punchTimesInDay = 0;
       previousPunchTime = punchTime;
     }
 
