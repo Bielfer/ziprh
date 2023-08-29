@@ -11,15 +11,17 @@ import { paths } from "~/constants/paths";
 import { tryCatch } from "~/helpers/try-catch";
 import { trpc } from "~/services/trpc";
 
+type EmployeeSchedule = {
+  employeeId: string;
+  employeeName: string;
+  schedule: string;
+  employeeImageUrl: string;
+};
+
 type Props = {
   date: Date;
   refetchDaysOff: () => void;
-  employeeSchedules: {
-    employeeId: string;
-    employeeName: string;
-    schedule: string;
-    employeeImageUrl: string;
-  }[];
+  employeeSchedules: EmployeeSchedule[];
 };
 
 const EmployeesAvailable: FC<Props> = ({
@@ -41,6 +43,57 @@ const EmployeesAvailable: FC<Props> = ({
   const { mutateAsync: deleteDayOff, isLoading: isDeletingDayOff } =
     trpc.dayOff.delete.useMutation();
 
+  const handleCreateDayOff = async (employeeSchedule: EmployeeSchedule) => {
+    const [, error] = await tryCatch(
+      createDayOff({
+        date,
+        userId: employeeSchedule.employeeId,
+      })
+    );
+    if (error) {
+      addToast({
+        type: "error",
+        content: "Falha ao dar folga, tente novamente ao sumir essa mensagem",
+        duration: 5000,
+      });
+      return;
+    }
+
+    refetch();
+    refetchDaysOff();
+  };
+
+  const handleDeleteDayOff = async (employeeSchedule: EmployeeSchedule) => {
+    const id = daysOff?.find(
+      (dayOff) => dayOff.userId === employeeSchedule.employeeId
+    )?.id;
+
+    if (!id) {
+      addToast({
+        type: "error",
+        content:
+          "Falha ao retirar folga, tente novamente após recarregar a página",
+        duration: 5000,
+      });
+      return;
+    }
+
+    const [, error] = await tryCatch(deleteDayOff({ id }));
+
+    if (error) {
+      addToast({
+        type: "error",
+        content:
+          "Falha ao retirar folga, tente novamente ao sumir essa mensagem",
+        duration: 5000,
+      });
+      return;
+    }
+
+    refetch();
+    refetchDaysOff();
+  };
+
   return (
     <LoadingWrapper isLoading={isLoading}>
       {employeeSchedules.length > 0 ? (
@@ -58,26 +111,7 @@ const EmployeesAvailable: FC<Props> = ({
                 size="xs"
                 loading={isCreatingDayOff}
                 disabled={isCreatingDayOff}
-                onClick={async () => {
-                  const [, error] = await tryCatch(
-                    createDayOff({
-                      date,
-                      userId: employeeSchedule.employeeId,
-                    })
-                  );
-                  if (error) {
-                    addToast({
-                      type: "error",
-                      content:
-                        "Falha ao dar folga, tente novamente ao sumir essa mensagem",
-                      duration: 5000,
-                    });
-                    return;
-                  }
-
-                  refetch();
-                  refetchDaysOff();
-                }}
+                onClick={() => handleCreateDayOff(employeeSchedule)}
               >
                 Dar Folga
               </Button>
@@ -87,36 +121,7 @@ const EmployeesAvailable: FC<Props> = ({
                 size="xs"
                 loading={isDeletingDayOff}
                 disabled={isDeletingDayOff}
-                onClick={async () => {
-                  const id = daysOff.find(
-                    (dayOff) => dayOff.userId === employeeSchedule.employeeId
-                  )?.id;
-
-                  if (!id) {
-                    addToast({
-                      type: "error",
-                      content:
-                        "Falha ao retirar folga, tente novamente após recarregar a página",
-                      duration: 5000,
-                    });
-                    return;
-                  }
-
-                  const [, error] = await tryCatch(deleteDayOff({ id }));
-
-                  if (error) {
-                    addToast({
-                      type: "error",
-                      content:
-                        "Falha ao retirar folga, tente novamente ao sumir essa mensagem",
-                      duration: 5000,
-                    });
-                    return;
-                  }
-
-                  refetch();
-                  refetchDaysOff();
-                }}
+                onClick={() => handleDeleteDayOff(employeeSchedule)}
               >
                 Remover Folga
               </Button>
