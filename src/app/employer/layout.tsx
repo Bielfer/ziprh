@@ -35,19 +35,19 @@ const EmployerLayout: FC<Props> = async ({ children }) => {
 
   return (
     <SidebarWrapper>
-      <SubscriptionWrapper subscription={subscription}>
-        <BannerWrapper subscription={subscription} />
+      <BannerWrapper subscription={subscription} />
 
-        {!orgId ? (
-          <div className="flex justify-center pt-16">
-            <CreateOrganization
-              afterCreateOrganizationUrl={paths.employerSchedule}
-            />
-          </div>
-        ) : (
-          children
-        )}
-      </SubscriptionWrapper>
+      {!orgId ? (
+        <div className="flex justify-center pt-16">
+          <CreateOrganization
+            afterCreateOrganizationUrl={paths.employerSchedule}
+          />
+        </div>
+      ) : (
+        <SubscriptionWrapper subscription={subscription}>
+          {children}
+        </SubscriptionWrapper>
+      )}
     </SidebarWrapper>
   );
 };
