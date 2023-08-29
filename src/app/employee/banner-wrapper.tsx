@@ -28,6 +28,8 @@ const BannerWrapper: FC<Props> = ({ subscription }) => {
   const daysRemaining = Math.floor(hoursUntilTrialEnds / 24);
   const hoursRemaining = hoursUntilTrialEnds % 24;
 
+  if (daysRemaining <= 0 && hoursRemaining <= 0) return null;
+
   return (
     <Banner
       className="mb-6"

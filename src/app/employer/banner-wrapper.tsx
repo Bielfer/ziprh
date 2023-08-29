@@ -76,6 +76,8 @@ const BannerWrapper: FC<Props> = ({ subscription }) => {
     window.location.href = session.url;
   };
 
+  if (daysRemaining <= 0 && hoursRemaining <= 0) return null;
+
   return (
     <Banner
       className="mb-6"
