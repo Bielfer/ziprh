@@ -36,13 +36,22 @@ model EmployeeSchedule {
 }
 
 model DayOff {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int        @id @default(autoincrement())
+  date       DateTime
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  type       DayOffType @default(DAY_OFF)
+  daysWorked Int?
+  daysOff    Int?
 
   userId         String
   organizationId String
+}
+
+enum DayOffType {
+  DAY_OFF
+  RECURRING
+  WORK_DAY
 }
 
 model Subscription {
