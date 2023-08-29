@@ -41,15 +41,18 @@ const Button: FC<ButtonProps> = ({
       className={clsx(
         "inline-flex items-center whitespace-nowrap rounded-lg font-medium transition duration-200",
         buttonStyles,
-        buttonAndLinkStyles[isButton ? "button" : "link"][
-          (variantStyle ?? buttonOrLink) as keyof (typeof buttonAndLinkStyles)[
-            | "button"
-            | "link"]
-        ],
+        disabled
+          ? buttonAndLinkStyles.button.disabled
+          : buttonAndLinkStyles[isButton ? "button" : "link"][
+              (variantStyle ??
+                buttonOrLink) as keyof (typeof buttonAndLinkStyles)[
+                | "button"
+                | "link"]
+            ],
         buttonAndLinkSizes[size],
         className
       )}
-      disabled={loading ?? disabled}
+      disabled={loading ? loading : disabled}
       {...props}
     >
       {loading ? (
