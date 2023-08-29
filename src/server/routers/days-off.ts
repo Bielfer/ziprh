@@ -11,22 +11,27 @@ export const dayOffRouter = router({
     .use(hasOrganization)
     .input(
       z.object({
-        startDate: z.date(),
-        endDate: z.date(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
         userId: z.string().optional(),
+        type: z.enum(dayOffTypesValues).optional(),
       })
     )
     .query(async ({ input }) => {
-      const { startDate, endDate, userId } = input;
+      const { startDate, endDate, userId, type } = input;
 
       const [daysOff, error] = await tryCatch(
         prisma.dayOff.findMany({
           where: {
-            date: {
-              lte: endDate,
-              gte: startDate,
-            },
+            ...(!!startDate &&
+              !!endDate && {
+                date: {
+                  lte: endDate,
+                  gte: startDate,
+                },
+              }),
             ...(!!userId && { userId }),
+            ...(!!type && { type }),
           },
         })
       );
