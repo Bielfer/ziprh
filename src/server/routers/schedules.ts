@@ -93,17 +93,6 @@ export const schedulesRouter = router({
           message: "No organization provided!",
         });
 
-      const [schedules, error] = await tryCatch(
-        prisma.employeeSchedule.findMany({
-          where: {
-            organizationId: orgId,
-            ...(!!userId && { userId }),
-          },
-        })
-      );
-
-      if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
-
       const [organizationMembership, errorOrganization] = await tryCatch(
         clerkClient.organizations.getOrganizationMembershipList({
           organizationId: orgId,
@@ -116,6 +105,25 @@ export const schedulesRouter = router({
           code: "BAD_REQUEST",
           message: errorOrganization,
         });
+
+      const [schedules, error] = await tryCatch(
+        prisma.employeeSchedule.findMany({
+          where: {
+            organizationId: orgId,
+            ...(!!userId
+              ? { userId }
+              : {
+                  userId: {
+                    in: organizationMembership.map(
+                      (member) => member.publicUserData?.userId ?? ""
+                    ),
+                  },
+                }),
+          },
+        })
+      );
+
+      if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
 
       const employeeSchedules = schedules?.map((schedule) =>
         dailyScheduleToNumbers({ schedule, organizationMembership })
