@@ -34,7 +34,7 @@ const EmployerEmployeeByUserId: FC<Props> = ({ params, searchParams }) => {
         userId={userId}
         employeeName={employeeName ?? "Funcionário sem nome"}
       />
-      <Container smallerContainer className="pt-8">
+      <Container smallerContainer>
         <FormEmployeeSchedule employeeId={userId} />
       </Container>
     </>
