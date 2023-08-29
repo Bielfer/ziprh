@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import Container from "~/components/container";
 import FormEmployeeSchedule from "~/components/forms/employee-schedule";
+import TabsWrapper from "../tabs-wrapper";
 
 type Props = {
   params: {
@@ -15,8 +16,8 @@ export const generateMetadata = ({ searchParams }: Props) => {
   const { employeeName } = searchParams;
 
   return {
-    title: `Configurações de ${employeeName ?? "Funcionário sem Nome"} | ZipRH`,
-    description: `Configure os dados de ${
+    title: `Escala de ${employeeName ?? "Funcionário sem Nome"} | ZipRH`,
+    description: `Configure a escala de ${
       employeeName ?? "Funcionário sem Nome"
     }`,
   };
@@ -28,7 +29,11 @@ const EmployerEmployeeByUserId: FC<Props> = ({ params, searchParams }) => {
 
   return (
     <>
-      <h1>Configurações de {employeeName ?? "Funcionário sem Nome"}</h1>
+      <h1>Escala de {employeeName ?? "Funcionário sem Nome"}</h1>
+      <TabsWrapper
+        userId={userId}
+        employeeName={employeeName ?? "Funcionário sem nome"}
+      />
       <Container smallerContainer className="pt-8">
         <FormEmployeeSchedule employeeId={userId} />
       </Container>

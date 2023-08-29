@@ -10,8 +10,10 @@ const paths = {
   employerClockIns: "/employer/clock-ins",
   employerClockInsByUserId: (userId: string) => `/employer/clock-ins/${userId}`,
   employerEmployees: "/employer/employees",
-  employerEmployeesByUserId: (userId: string) =>
-    `/employer/employees/${userId}`,
+  employerEmployeesByUserIdSchedule: (userId: string) =>
+    `/employer/employees/${userId}/schedule`,
+  employerEmployeesByUserIdDaysOff: (userId: string) =>
+    `/employer/employees/${userId}/days-off`,
   employerSubscriptionSuccess: "/employer/subscription-success",
   employeeSchedule: "/employee/schedule",
   employeeClockIns: "/employee/clock-ins",
