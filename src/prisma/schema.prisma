@@ -58,7 +58,7 @@ model Subscription {
   id             Int                @id @default(autoincrement())
   organizationId String             @unique
   customerId     String
-  stripeId       String
+  stripeId       String?
   status         SubscriptionStatus
   renewAt        DateTime
   userId         String

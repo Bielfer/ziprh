@@ -59,7 +59,6 @@ export const handleFirstOrganizationLogin = async ({
         userId,
         customerId,
         organizationId: orgId,
-        stripeId: "",
         renewAt: addDays(new Date(), trialPeriod),
         status: "trialing",
       },

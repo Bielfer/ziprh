@@ -29,7 +29,7 @@ const updateStripeSubscription = async ({
     prisma.subscription.findUnique({ where: { organizationId } })
   );
 
-  if (errorSubscription ?? !subscription) {
+  if (errorSubscription ?? !subscription ?? !subscription.stripeId) {
     console.error(errorSubscription);
     return;
   }
