@@ -41,6 +41,7 @@ const EmployerLayout: FC<Props> = async ({ children }) => {
         <div className="flex justify-center pt-16">
           <CreateOrganization
             afterCreateOrganizationUrl={paths.employerSchedule}
+            skipInvitationScreen
           />
         </div>
       ) : (

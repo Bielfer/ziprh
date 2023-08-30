@@ -91,9 +91,10 @@ const EmployeesList: FC<Props> = ({ href }) => {
             ))
           ) : (
             <EmptyState
+              className="mx-auto max-w-lg"
               icon={UsersIcon}
               title="Você ainda não adicionou nenhum funcionário a essa organização"
-              subtitle="Para adicionar um novo funcionário basta clicar no nome da sua organização na barra à esquerda"
+              subtitle="Para adicionar um novo funcionário basta clicar no nome da sua organização na barra à esquerda, em seguida clique em gerenciar organização"
             />
           )}
         </ol>
