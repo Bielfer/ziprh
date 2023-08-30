@@ -9,19 +9,19 @@ const features = [
     title: "Escala",
     description:
       "Você consegue acompanhar a escala de todos os seus funcionários",
-    image: "/screenshots/patient.png",
+    image: "/screenshots/schedule.png",
   },
   {
     title: "Histórico de Pontos",
     description:
       "Você consegue saber exatamente a hora que seus funcionários bateram o ponto",
-    image: "/screenshots/handbook.png",
+    image: "/screenshots/clock-ins.png",
   },
   {
     title: "Ponto Digital",
     description:
       "Seu funcionário pode bater o ponto do próprio celular, sem precisar comprar nenhuma máquina de pontos",
-    image: "/screenshots/summary.png",
+    image: "/screenshots/employee-clock-ins.png",
   },
 ];
 
@@ -122,7 +122,7 @@ const PrimaryFeatures = () => {
                       <Image
                         src={feature.image}
                         alt=""
-                        layout="fill"
+                        fill
                         priority
                         sizes="(min-width: 1024px) 67.8125rem, (min-width: 640px) 100vw, 45rem"
                       />
