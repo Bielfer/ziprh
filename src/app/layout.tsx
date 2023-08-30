@@ -3,9 +3,9 @@ import { type FC } from "react";
 import ClientProviders from "~/app/client-providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
-import { ptBR } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/react";
 import Crisp from "./crisp";
+import { ptBrLocalization } from "~/constants/clerk";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,7 +19,7 @@ type Props = {
 
 const RootLayout: FC<Props> = ({ children }) => {
   return (
-    <ClerkProvider localization={ptBR}>
+    <ClerkProvider localization={ptBrLocalization}>
       <html lang="en" className={inter.className}>
         <head>
           <link rel="icon" href="/logo-icon.png" sizes="any" />
