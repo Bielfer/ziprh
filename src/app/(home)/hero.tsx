@@ -20,14 +20,17 @@ const Hero = () => (
     </h1>
     <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
       Sabemos que ficar controlando a escala e os pontos dos funcionários pode
-      ser uma tarefa muito maçante. Nossa missão é ajudar o empreendedor
-      brasileiro a ter mais tempo para focar naquilo que realmente importa
+      ser uma tarefa muito maçante. Nossa missão é ajudar o empreendedor a ter
+      mais tempo para focar naquilo que realmente leva seu negócio pra frente
     </p>
     <div className="mt-10 flex justify-center space-x-6">
       <MyLink href={paths.signUp} variant="button-primary">
         Cadastre-se Agora
       </MyLink>
     </div>
+    <p className="mx-auto mt-3 max-w-sm text-sm text-gray-600">
+      PS: Não precisa de cartão para começar a usar
+    </p>
   </Container>
 );
 
