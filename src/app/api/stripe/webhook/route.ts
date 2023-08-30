@@ -46,6 +46,7 @@ export const POST = async (req: Request) => {
         data: {
           status,
           renewAt: fromUnixTime(subscription.current_period_end),
+          stripeId: subscription.id,
         },
       });
 
