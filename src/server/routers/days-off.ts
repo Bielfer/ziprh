@@ -4,7 +4,6 @@ import { hasOrganization, isRole } from "../middlewares";
 import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { TRPCError } from "@trpc/server";
-import { dayOffTypesValues } from "~/constants/days-off";
 
 export const dayOffRouter = router({
   getMany: privateProcedure
@@ -14,11 +13,10 @@ export const dayOffRouter = router({
         startDate: z.date().optional(),
         endDate: z.date().optional(),
         userId: z.string().optional(),
-        type: z.enum(dayOffTypesValues).optional(),
       })
     )
     .query(async ({ input }) => {
-      const { startDate, endDate, userId, type } = input;
+      const { startDate, endDate, userId } = input;
 
       const [daysOff, error] = await tryCatch(
         prisma.dayOff.findMany({
@@ -31,7 +29,6 @@ export const dayOffRouter = router({
                 },
               }),
             ...(!!userId && { userId }),
-            ...(!!type && { type }),
           },
         })
       );
@@ -40,6 +37,7 @@ export const dayOffRouter = router({
 
       return daysOff;
     }),
+
   upsert: privateProcedure
     .use(isRole("admin"))
     .use(hasOrganization)
@@ -48,9 +46,6 @@ export const dayOffRouter = router({
         id: z.number().optional(),
         userId: z.string().optional(),
         date: z.date().optional(),
-        type: z.enum(dayOffTypesValues).optional(),
-        daysWorked: z.number().optional(),
-        daysOff: z.number().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
