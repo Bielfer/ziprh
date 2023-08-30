@@ -19,13 +19,6 @@ const TabsWrapper: FC<Props> = ({ userId, employeeName }) => {
             query: { employeeName },
           },
         },
-        {
-          name: "Folgas",
-          href: {
-            pathname: paths.employerEmployeesByUserIdDaysOff(userId),
-            query: { employeeName },
-          },
-        },
       ]}
     />
   );
