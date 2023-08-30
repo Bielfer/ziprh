@@ -18,31 +18,37 @@ model ClockIn {
 }
 
 model EmployeeSchedule {
-  id        Int      @id @default(autoincrement())
-  beginning String
-  end       String
-  sunday    Boolean
-  monday    Boolean
-  tuesday   Boolean
-  wednesday Boolean
-  thursday  Boolean
-  friday    Boolean
-  saturday  Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int                  @id @default(autoincrement())
+  beginning   String
+  end         String
+  sunday      Boolean              @default(false)
+  monday      Boolean              @default(false)
+  tuesday     Boolean              @default(false)
+  wednesday   Boolean              @default(false)
+  thursday    Boolean              @default(false)
+  friday      Boolean              @default(false)
+  saturday    Boolean              @default(false)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  type        EmployeeScheduleType @default(CUSTOMIZABLE)
+  daysWorked  Int                  @default(0)
+  daysOff     Int                  @default(0)
+  firstDayOff DateTime?
 
   userId         String
   organizationId String
 }
 
+enum EmployeeScheduleType {
+  INTERVAL
+  CUSTOMIZABLE
+}
+
 model DayOff {
-  id         Int        @id @default(autoincrement())
-  date       DateTime
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  type       DayOffType @default(DAY_OFF)
-  daysWorked Int?
-  daysOff    Int?
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId         String
   organizationId String
