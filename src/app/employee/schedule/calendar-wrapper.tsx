@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FC, useMemo } from "react";
 import { trpc } from "~/services/trpc";
-import { generateMonth } from "~/helpers/dates";
+import { generateMonth, isIntervalSchedule } from "~/helpers/dates";
 import {
   addMonths,
   endOfMonth,
@@ -21,6 +21,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useOrganizationChange } from "~/hooks";
 import FeedIcons from "~/components/feed-icons";
+import { dayOffTypes } from "~/constants/days-off-types";
+import { scheduleTypes } from "~/constants/schedule-types";
 
 type Props = {
   userId: string;
@@ -43,14 +45,25 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
   const days = useMemo(
     () =>
       generateMonth(selectedDate).map((day) => {
-        const filteredSchedules = schedules?.filter(
-          (schedule) =>
-            schedule.days.includes(getDay(day)) &&
-            !daysOff?.find(
-              (dayOff) =>
-                isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
-            )
-        );
+        const filteredSchedules = schedules?.filter((schedule) => {
+          const foundDayOff = daysOff?.find(
+            (dayOff) =>
+              isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
+          );
+
+          if (foundDayOff?.type === dayOffTypes.workDay) return true;
+
+          return (
+            (schedule.type === scheduleTypes.customizable
+              ? schedule.days.includes(getDay(day))
+              : isIntervalSchedule({
+                  dateLeft: schedule.firstDayOff,
+                  dateRight: day,
+                  daysOff: schedule.daysOff,
+                  daysWorked: schedule.daysWorked,
+                })) && foundDayOff?.type !== dayOffTypes.dayOff
+          );
+        });
         const events: { name: string; time: string }[] = [];
 
         filteredSchedules?.forEach((schedule, idx) => {
