@@ -29,16 +29,15 @@ const dailyScheduleToNumbers = ({
   organizationMembership: OrganizationMembership[];
   schedule: EmployeeSchedule;
 }) => {
-  const {
-    id,
-    createdAt,
-    updatedAt,
-    beginning,
-    end,
-    organizationId,
-    userId,
-    ...days
-  } = schedule;
+  const days = {
+    sunday: schedule.sunday,
+    monday: schedule.monday,
+    tuesday: schedule.tuesday,
+    wednesday: schedule.wednesday,
+    thursday: schedule.thursday,
+    friday: schedule.friday,
+    saturday: schedule.saturday,
+  };
 
   const daysToNumber = {
     sunday: 0,
@@ -51,17 +50,11 @@ const dailyScheduleToNumbers = ({
   } as const;
 
   const member = organizationMembership.find(
-    (member) => member.publicUserData?.userId === userId
+    (member) => member.publicUserData?.userId === schedule.userId
   );
 
   return {
-    id,
-    createdAt,
-    updatedAt,
-    beginning,
-    end,
-    organizationId,
-    userId,
+    ...schedule,
     userFullName: member?.publicUserData?.firstName
       ? `${member?.publicUserData?.firstName} ${
           member?.publicUserData?.lastName ?? ""
@@ -146,7 +139,7 @@ export const schedulesRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { orgId } = ctx.auth;
-      const { days, ...filteredInput } = input;
+      const { days, employeeId, ...filteredInput } = input;
 
       const dailySchedule = formatDailySchedule(days);
 
@@ -155,7 +148,7 @@ export const schedulesRouter = router({
           data: {
             ...dailySchedule,
             ...filteredInput,
-            userId: input.employeeId,
+            userId: employeeId,
             organizationId: orgId,
           },
         })
@@ -183,19 +176,19 @@ export const schedulesRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { orgId } = ctx.auth;
-      const { days, ...filteredInput } = input;
+      const { id, employeeId, days, ...filteredInput } = input;
 
       const dailySchedule = formatDailySchedule(days);
 
       const [schedule, error] = await tryCatch(
         prisma.employeeSchedule.update({
           where: {
-            id: input.id,
+            id,
           },
           data: {
             ...dailySchedule,
             ...filteredInput,
-            userId: input.employeeId,
+            userId: employeeId,
             organizationId: orgId,
           },
         })
