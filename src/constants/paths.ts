@@ -12,8 +12,6 @@ const paths = {
   employerEmployees: "/employer/employees",
   employerEmployeesByUserIdSchedule: (userId: string) =>
     `/employer/employees/${userId}/schedule`,
-  employerEmployeesByUserIdDaysOff: (userId: string) =>
-    `/employer/employees/${userId}/days-off`,
   employerSubscriptionSuccess: "/employer/subscription-success",
   employeeSchedule: "/employee/schedule",
   employeeClockIns: "/employee/clock-ins",
