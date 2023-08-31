@@ -39,9 +39,9 @@ const FormEmployeeSchedule: FC<Props> = ({ employeeId }) => {
   } = trpc.schedules.getMany.useQuery({
     userId: employeeId,
   });
-  const { mutate: createSchedule } = trpc.schedules.create.useMutation();
-  const { mutate: updateSchedule } = trpc.schedules.update.useMutation();
-  const { mutate: deleteSchedule } = trpc.schedules.delete.useMutation();
+  const { mutateAsync: createSchedule } = trpc.schedules.create.useMutation();
+  const { mutateAsync: updateSchedule } = trpc.schedules.update.useMutation();
+  const { mutateAsync: deleteSchedule } = trpc.schedules.delete.useMutation();
   const [type, setType] = useState<(typeof scheduleTypesValues)[number]>(
     scheduleTypes.customizable
   );
