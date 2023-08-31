@@ -172,12 +172,6 @@ const FormEmployeeSchedule: FC<Props> = ({ employeeId }) => {
       return;
     }
 
-    addToast({
-      type: "success",
-      content: "Horários salvos com sucesso, você já pode olhar a nova escala",
-      duration: 5000,
-    });
-
     const [, errorRefetching] = await tryCatch(refetchSchedules());
 
     if (errorRefetching)
@@ -186,6 +180,12 @@ const FormEmployeeSchedule: FC<Props> = ({ employeeId }) => {
         content: "Ocorreu algum erro, recarregue a página e tente novamente!",
         duration: 5000,
       });
+
+    addToast({
+      type: "success",
+      content: "Horários salvos com sucesso, você já pode olhar a nova escala",
+      duration: 5000,
+    });
   };
 
   return (
