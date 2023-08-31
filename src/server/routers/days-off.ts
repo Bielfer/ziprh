@@ -4,6 +4,7 @@ import { hasOrganization, isRole } from "../middlewares";
 import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { TRPCError } from "@trpc/server";
+import { dayOffTypesValues } from "~/constants/days-off-types";
 
 export const dayOffRouter = router({
   getMany: privateProcedure
@@ -38,30 +39,49 @@ export const dayOffRouter = router({
       return daysOff;
     }),
 
-  upsert: privateProcedure
+  create: privateProcedure
     .use(isRole("admin"))
     .use(hasOrganization)
     .input(
       z.object({
-        id: z.number().optional(),
-        userId: z.string().optional(),
-        date: z.date().optional(),
+        userId: z.string(),
+        date: z.date(),
+        type: z.enum(dayOffTypesValues).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId, id, ...filteredInput } = input;
       const { orgId } = ctx.auth;
 
       const [dayOff, error] = await tryCatch(
-        prisma.dayOff.upsert({
-          where: { id: id ?? -1 },
-          create: {
-            ...filteredInput,
-            userId: userId ?? "",
-            date: filteredInput.date ?? new Date(1999),
+        prisma.dayOff.create({
+          data: {
+            ...input,
             organizationId: orgId,
           },
-          update: filteredInput,
+        })
+      );
+
+      if (error) throw new TRPCError({ code: "BAD_REQUEST", message: error });
+
+      return dayOff;
+    }),
+  update: privateProcedure
+    .use(isRole("admin"))
+    .use(hasOrganization)
+    .input(
+      z.object({
+        id: z.number(),
+        date: z.date().optional(),
+        type: z.enum(dayOffTypesValues).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { id, ...filteredInput } = input;
+
+      const [dayOff, error] = await tryCatch(
+        prisma.dayOff.update({
+          where: { id },
+          data: filteredInput,
         })
       );
 
