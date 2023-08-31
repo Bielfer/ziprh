@@ -4,7 +4,9 @@ import {
   getDay,
   addDays,
   differenceInCalendarDays,
+  isSameDay,
 } from "date-fns";
+import { generateIntegerArray } from "./arrays";
 
 export const generateMonth = (calendarDate: Date) => {
   const firstDayOfMonth = startOfMonth(calendarDate);
@@ -31,4 +33,29 @@ export const generateMonth = (calendarDate: Date) => {
   }
 
   return month;
+};
+
+export const isIntervalSchedule = ({
+  dateLeft,
+  dateRight,
+  daysWorked,
+  daysOff,
+}: {
+  dateLeft: Date | null;
+  dateRight: Date | null;
+  daysWorked: number | null;
+  daysOff: number | null;
+}) => {
+  if (!daysOff || !daysWorked || !dateLeft || !dateRight) return false;
+  if (isSameDay(dateLeft, dateRight)) return false;
+
+  const acceptedMultiples = generateIntegerArray(0, daysOff - 1);
+  let daysBetween = differenceInCalendarDays(dateRight, dateLeft);
+
+  if (daysBetween < 0) daysBetween = -daysBetween + daysOff - 1;
+
+  if (acceptedMultiples.includes(daysBetween % (daysOff + daysWorked)))
+    return false;
+
+  return true;
 };

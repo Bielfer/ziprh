@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FC, useMemo } from "react";
 import { trpc } from "~/services/trpc";
-import { generateMonth } from "~/helpers/dates";
+import { generateMonth, isIntervalSchedule } from "~/helpers/dates";
 import {
   addMonths,
   endOfMonth,
@@ -13,13 +13,17 @@ import {
 import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import CalendarMonthView from "~/components/calendar-month-view";
-import EmployeesAvailable from "./employees-available";
+import EmployeesAvailable, {
+  type EmployeeSchedule,
+} from "./employees-available";
 import EmptyState from "~/components/empty-state";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import MyLink from "~/components/my-link";
 import { paths } from "~/constants/paths";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useOrganizationChange } from "~/hooks";
+import { scheduleTypes } from "~/constants/schedule-types";
+import { dayOffTypes } from "~/constants/days-off-types";
 
 const CalendarWrapper: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -39,14 +43,25 @@ const CalendarWrapper: FC = () => {
   const days = useMemo(
     () =>
       generateMonth(selectedDate).map((day) => {
-        const filteredSchedules = schedules?.filter(
-          (schedule) =>
-            schedule.days.includes(getDay(day)) &&
-            !daysOff?.find(
-              (dayOff) =>
-                isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
-            )
-        );
+        const filteredSchedules = schedules?.filter((schedule) => {
+          const foundDayOff = daysOff?.find(
+            (dayOff) =>
+              isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
+          );
+
+          if (foundDayOff?.type === dayOffTypes.workDay) return true;
+
+          return (
+            (schedule.type === scheduleTypes.customizable
+              ? schedule.days.includes(getDay(day))
+              : isIntervalSchedule({
+                  dateLeft: schedule.firstDayOff,
+                  dateRight: day,
+                  daysOff: schedule.daysOff,
+                  daysWorked: schedule.daysWorked,
+                })) && foundDayOff?.type !== dayOffTypes.dayOff
+          );
+        });
         const events: { name: string; time: string }[] = [];
         let amountOfTimes = 0;
 
@@ -88,34 +103,36 @@ const CalendarWrapper: FC = () => {
     setSelectedDate((prev) => addMonths(prev, -1));
   };
 
-  const filteredSchedulesByDay = useMemo(() => {
-    const employeeSchedules: {
-      employeeId: string;
-      employeeName: string;
-      schedule: string;
-      employeeImageUrl: string;
-    }[] = [];
+  const schedulesByDay = useMemo(() => {
+    const employeeSchedules: EmployeeSchedule[] = [];
 
-    schedules
-      ?.filter((schedule) => schedule.days.includes(getDay(selectedDate)))
-      .forEach((schedule) => {
-        const foundIdx = employeeSchedules.findIndex(
-          (employeeSchedule) => employeeSchedule.employeeId === schedule.userId
-        );
-        const existingSchedule = employeeSchedules[foundIdx];
+    schedules?.forEach((schedule) => {
+      const foundIdx = employeeSchedules.findIndex(
+        (employeeSchedule) => employeeSchedule.employeeId === schedule.userId
+      );
+      const existingSchedule = employeeSchedules[foundIdx];
 
-        if (!!existingSchedule) {
-          existingSchedule.schedule += ` / ${schedule.beginning} - ${schedule.end}`;
-          return;
-        }
+      if (!!existingSchedule) {
+        existingSchedule.schedule += ` / ${schedule.beginning} - ${schedule.end}`;
+        return;
+      }
 
-        employeeSchedules.push({
-          employeeId: schedule.userId,
-          employeeImageUrl: schedule.userImage ?? "",
-          employeeName: schedule.userFullName ?? null,
-          schedule: `${schedule.beginning} - ${schedule.end}`,
-        });
+      employeeSchedules.push({
+        employeeId: schedule.userId,
+        employeeImageUrl: schedule.userImage ?? "",
+        employeeName: schedule.userFullName ?? null,
+        schedule: `${schedule.beginning} - ${schedule.end}`,
+        isWorkDay:
+          schedule.type === scheduleTypes.customizable
+            ? schedule.days.includes(getDay(selectedDate))
+            : isIntervalSchedule({
+                dateLeft: schedule.firstDayOff,
+                dateRight: selectedDate,
+                daysOff: schedule.daysOff,
+                daysWorked: schedule.daysWorked,
+              }),
       });
+    });
 
     return employeeSchedules;
   }, [selectedDate, schedules]);
@@ -161,8 +178,8 @@ const CalendarWrapper: FC = () => {
         <h3>Escala em {format(selectedDate, "dd/MM")}</h3>
         <EmployeesAvailable
           date={selectedDate}
-          employeeSchedules={filteredSchedulesByDay}
           refetchDaysOff={() => refetchDaysOff()}
+          schedulesByDay={schedulesByDay}
         />
       </Modal>
     </>
