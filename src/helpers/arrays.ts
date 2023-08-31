@@ -8,3 +8,6 @@ export const generateIntegerArray = (min: number, max: number) => {
 
   return arr;
 };
+
+export const arrayExistsAndHasItems = (arr?: any[] | null) =>
+  !!arr && arr.length > 0;
