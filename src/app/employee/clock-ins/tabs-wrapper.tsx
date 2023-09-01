@@ -20,7 +20,7 @@ type Props = {
 };
 
 const TabsWrapper: FC<Props> = ({ className }) => {
-  return <Tabs items={items} className={cn("pb-10 pt-4", className)} />;
+  return <Tabs items={items} className={cn("mb-10 mt-4 sm:mt-0", className)} />;
 };
 
 export default TabsWrapper;

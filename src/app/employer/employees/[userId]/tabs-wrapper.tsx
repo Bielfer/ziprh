@@ -10,7 +10,7 @@ type Props = {
 const TabsWrapper: FC<Props> = ({ userId, employeeName }) => {
   return (
     <Tabs
-      className="mb-8"
+      className="mb-8 mt-4 sm:mt-0"
       items={[
         {
           name: "Escala",
