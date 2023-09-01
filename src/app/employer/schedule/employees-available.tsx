@@ -1,4 +1,6 @@
+import { type OrganizationMembershipResource } from "@clerk/types";
 import { CalendarDaysIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
+import { type DayOffType } from "@prisma/client";
 import { endOfDay, startOfDay } from "date-fns";
 import { useState, type FC } from "react";
 import Button from "~/components/button";
@@ -12,37 +14,51 @@ import { paths } from "~/constants/paths";
 import { tryCatch } from "~/helpers/try-catch";
 import { trpc } from "~/services/trpc";
 
-export type EmployeeSchedule = {
-  employeeId: string;
-  employeeName: string;
-  schedule: string;
-  employeeImageUrl: string;
+type Employee = {
+  id: string;
+  name: string;
+  imageUrl: string;
   isWorkDay: boolean;
+  times: string[] | undefined;
+  dayOff:
+    | {
+        id: number;
+        date: Date;
+        type: DayOffType;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        organizationId: string;
+      }
+    | undefined;
 };
 
 type Props = {
   date: Date;
-  refetchDaysOff: () => void;
-  schedulesByDay: EmployeeSchedule[];
+  membershipList?: OrganizationMembershipResource[] | null;
 };
 
-const EmployeesAvailable: FC<Props> = ({
-  schedulesByDay,
-  date,
-  refetchDaysOff,
-}) => {
+const EmployeesAvailable: FC<Props> = ({ date, membershipList }) => {
   const { addToast } = useToast();
   const {
-    data: daysOff,
+    data: schedules,
+    refetch: refetchSchedules,
     isLoading,
-    refetch,
-  } = trpc.dayOff.getMany.useQuery({
-    startDate: startOfDay(date),
-    endDate: endOfDay(date),
-  });
+  } = trpc.schedules.getFormattedSchedule.useQuery(
+    {
+      userId:
+        membershipList?.map((member) => member.publicUserData.userId ?? "") ??
+        [],
+      startDate: startOfDay(date),
+      endDate: endOfDay(date),
+    },
+    { enabled: !!membershipList }
+  );
   const { mutateAsync: createDayOff } = trpc.dayOff.create.useMutation();
   const { mutateAsync: updateDayOff } = trpc.dayOff.update.useMutation();
   const [loadingEmployees, setLoadingEmployees] = useState<string[]>([]);
+
+  const dailySchedule = schedules?.[0];
 
   const addLoadingEmployee = (employeeId: string) => {
     setLoadingEmployees((prev) => [...prev, employeeId]);
@@ -54,19 +70,15 @@ const EmployeesAvailable: FC<Props> = ({
     );
   };
 
-  const handleGiveDayOff = async (employeeSchedule: EmployeeSchedule) => {
-    addLoadingEmployee(employeeSchedule.employeeId);
+  const handleGiveDayOff = async (employee: Employee) => {
+    addLoadingEmployee(employee.id);
 
     let error: any;
 
-    const dayOff = daysOff?.find(
-      (dayOff) => dayOff.userId === employeeSchedule.employeeId
-    );
-
-    if (!!dayOff)
+    if (!!employee.dayOff?.id)
       [, error] = await tryCatch(
         updateDayOff({
-          id: dayOff.id,
+          id: employee.dayOff.id,
           type: dayOffTypes.dayOff,
         })
       );
@@ -74,7 +86,7 @@ const EmployeesAvailable: FC<Props> = ({
       [, error] = await tryCatch(
         createDayOff({
           date,
-          userId: employeeSchedule.employeeId,
+          userId: employee.id,
         })
       );
 
@@ -87,23 +99,19 @@ const EmployeesAvailable: FC<Props> = ({
       return;
     }
 
-    refetch();
-    refetchDaysOff();
-    removeLoadingEmployee(employeeSchedule.employeeId);
+    refetchSchedules();
+    removeLoadingEmployee(employee.id);
   };
 
-  const handleRemoveDayOff = async (employeeSchedule: EmployeeSchedule) => {
-    addLoadingEmployee(employeeSchedule.employeeId);
+  const handleRemoveDayOff = async (employee: Employee) => {
+    addLoadingEmployee(employee.id);
 
     let error: any;
-    const dayOff = daysOff?.find(
-      (dayOff) => dayOff.userId === employeeSchedule.employeeId
-    );
 
-    if (!!dayOff)
+    if (!!employee.dayOff)
       [, error] = await tryCatch(
         updateDayOff({
-          id: dayOff.id,
+          id: employee.dayOff.id,
           type: dayOffTypes.workDay,
         })
       );
@@ -111,7 +119,7 @@ const EmployeesAvailable: FC<Props> = ({
       [, error] = await tryCatch(
         createDayOff({
           date,
-          userId: employeeSchedule.employeeId,
+          userId: employee.id,
           type: dayOffTypes.workDay,
         })
       );
@@ -126,52 +134,39 @@ const EmployeesAvailable: FC<Props> = ({
       return;
     }
 
-    refetch();
-    refetchDaysOff();
-    removeLoadingEmployee(employeeSchedule.employeeId);
+    refetchSchedules();
+    removeLoadingEmployee(employee.id);
   };
 
   return (
     <LoadingWrapper isLoading={isLoading}>
-      {schedulesByDay.length > 0 ? (
+      {!!dailySchedule ? (
         <StackedList
-          items={schedulesByDay.map((employeeSchedule) => {
-            const foundDayOff = daysOff?.find(
-              (dayOff) => dayOff.userId === employeeSchedule.employeeId
-            );
-
-            return {
-              id: employeeSchedule.employeeId,
-              imageUrl: employeeSchedule.employeeImageUrl,
-              name: employeeSchedule.employeeName ?? "Funcionário sem nome",
-              subName: employeeSchedule.schedule,
-              onRight:
-                foundDayOff?.type === dayOffTypes.dayOff ||
-                (!foundDayOff && !employeeSchedule.isWorkDay) ? (
-                  <Button
-                    variant="danger"
-                    size="xs"
-                    loading={loadingEmployees.includes(
-                      employeeSchedule.employeeId
-                    )}
-                    onClick={() => handleRemoveDayOff(employeeSchedule)}
-                  >
-                    Remover Folga
-                  </Button>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    size="xs"
-                    loading={loadingEmployees.includes(
-                      employeeSchedule.employeeId
-                    )}
-                    onClick={() => handleGiveDayOff(employeeSchedule)}
-                  >
-                    Dar Folga
-                  </Button>
-                ),
-            };
-          })}
+          items={dailySchedule.employees.map((employee) => ({
+            id: employee.id,
+            imageUrl: employee.imageUrl,
+            name: employee.name,
+            subName: (employee.times ?? [])?.join(" / ") || "N. Inf.",
+            onRight: employee.isWorkDay ? (
+              <Button
+                variant="secondary"
+                size="xs"
+                loading={loadingEmployees.includes(employee.id)}
+                onClick={() => handleGiveDayOff(employee)}
+              >
+                Dar Folga
+              </Button>
+            ) : (
+              <Button
+                variant="danger"
+                size="xs"
+                loading={loadingEmployees.includes(employee.id)}
+                onClick={() => handleRemoveDayOff(employee)}
+              >
+                Remover Folga
+              </Button>
+            ),
+          }))}
         />
       ) : (
         <EmptyState

@@ -59,3 +59,35 @@ export const isIntervalSchedule = ({
 
   return true;
 };
+
+export const generateDatesBetween = (startDate: Date, endDate: Date) => {
+  let date = startDate;
+  const dates: Date[] = [startDate];
+
+  for (let i = 0; i < differenceInCalendarDays(endDate, startDate); i++) {
+    date = addDays(date, 1);
+    dates.push(date);
+  }
+
+  return dates;
+};
+
+export const startAndEndOfCalendarMonth = (date: Date) => {
+  let firstDayOfMonth = startOfMonth(date);
+  let lastDayOfMonth = getLastDayOfMonth(date);
+  const firstWeekDay = getDay(firstDayOfMonth);
+  const lastWeekDay = getDay(lastDayOfMonth);
+
+  if (firstWeekDay) {
+    firstDayOfMonth = addDays(firstDayOfMonth, -firstWeekDay);
+  }
+
+  if (lastWeekDay) {
+    lastDayOfMonth = addDays(lastDayOfMonth, 6 - lastWeekDay);
+  }
+
+  return {
+    firstDayOfMonth,
+    lastDayOfMonth,
+  };
+};

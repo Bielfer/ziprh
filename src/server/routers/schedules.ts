@@ -8,7 +8,10 @@ import { clerkClient } from "@clerk/nextjs";
 import { type OrganizationMembership } from "@clerk/nextjs/dist/types/server";
 import { hasOrganization, isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
-import { scheduleTypesValues } from "~/constants/schedule-types";
+import { scheduleTypes, scheduleTypesValues } from "~/constants/schedule-types";
+import { generateDatesBetween, isIntervalSchedule } from "~/helpers/dates";
+import { dayOffTypes } from "~/constants/days-off-types";
+import { getDay, isSameDay } from "date-fns";
 
 const formatDailySchedule = (days?: number[]) => {
   return {
@@ -67,6 +70,32 @@ const dailyScheduleToNumbers = ({
   };
 };
 
+const convertDayToNumber = (schedule: EmployeeSchedule) => {
+  const days = {
+    sunday: schedule.sunday,
+    monday: schedule.monday,
+    tuesday: schedule.tuesday,
+    wednesday: schedule.wednesday,
+    thursday: schedule.thursday,
+    friday: schedule.friday,
+    saturday: schedule.saturday,
+  };
+
+  const daysToNumber = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  } as const;
+
+  return Object.entries(days)
+    .filter(([, value]) => value)
+    .map(([key]) => daysToNumber[key as keyof typeof daysToNumber]);
+};
+
 export const schedulesRouter = router({
   getMany: privateProcedure
     .input(
@@ -121,6 +150,101 @@ export const schedulesRouter = router({
       );
 
       return employeeSchedules;
+    }),
+  getFormattedSchedule: privateProcedure
+    .use(hasOrganization)
+    .input(
+      z.object({
+        userId: z.string().array(),
+        startDate: z.date(),
+        endDate: z.date(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { orgId } = ctx.auth;
+      const { userId, startDate, endDate } = input;
+
+      const [users, errorUsers] = await tryCatch(
+        clerkClient.users.getUserList({
+          userId,
+        })
+      );
+
+      if (errorUsers || !users)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: errorUsers,
+        });
+
+      const [daysOff, errorDaysOff] = await tryCatch(
+        prisma.dayOff.findMany({
+          where: {
+            date: {
+              lte: endDate,
+              gte: startDate,
+            },
+            userId: { in: userId },
+          },
+        })
+      );
+
+      if (errorDaysOff)
+        throw new TRPCError({ code: "BAD_REQUEST", message: errorDaysOff });
+
+      const [schedules, errorSchedules] = await tryCatch(
+        prisma.employeeSchedule.findMany({
+          where: {
+            organizationId: orgId,
+            userId: { in: userId },
+          },
+        })
+      );
+
+      if (errorSchedules)
+        throw new TRPCError({ code: "BAD_REQUEST", message: errorSchedules });
+
+      const finalSchedule = generateDatesBetween(startDate, endDate).map(
+        (day) => ({
+          day,
+          employees: users.map((user) => {
+            const foundDayOff = daysOff?.find(
+              (dayOff) =>
+                dayOff.userId === user.id && isSameDay(dayOff.date, day)
+            );
+            const foundSchedules = schedules?.filter(
+              (schedule) =>
+                schedule.userId === user.id &&
+                (schedule.type === scheduleTypes.customizable
+                  ? convertDayToNumber(schedule).includes(getDay(day))
+                  : isIntervalSchedule({
+                      dateLeft: schedule.firstDayOff,
+                      dateRight: day,
+                      daysOff: schedule.daysOff,
+                      daysWorked: schedule.daysWorked,
+                    }))
+            );
+            let isWorkDay =
+              foundDayOff?.type === dayOffTypes.workDay ? true : false;
+
+            if (!foundDayOff) {
+              isWorkDay = !!foundSchedules && foundSchedules.length > 0;
+            }
+
+            return {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              imageUrl: user.imageUrl,
+              isWorkDay,
+              times: foundSchedules?.map(
+                (schedule) => `${schedule.beginning}-${schedule.end}`
+              ),
+              dayOff: foundDayOff,
+            };
+          }),
+        })
+      );
+
+      return finalSchedule;
     }),
   create: privateProcedure
     .use(isRole(roles.admin))

@@ -1,15 +1,8 @@
 "use client";
 import { useState, type FC, useMemo } from "react";
 import { trpc } from "~/services/trpc";
-import { generateMonth, isIntervalSchedule } from "~/helpers/dates";
-import {
-  addMonths,
-  endOfMonth,
-  format,
-  getDay,
-  isSameDay,
-  startOfMonth,
-} from "date-fns";
+import { startAndEndOfCalendarMonth } from "~/helpers/dates";
+import { addMonths, format, isSameDay } from "date-fns";
 import LoadingWrapper from "~/components/loading-wrapper";
 import Modal from "~/components/modal";
 import CalendarMonthView from "~/components/calendar-month-view";
@@ -21,8 +14,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { useOrganizationChange } from "~/hooks";
 import FeedIcons from "~/components/feed-icons";
-import { dayOffTypes } from "~/constants/days-off-types";
-import { scheduleTypes } from "~/constants/schedule-types";
 
 type Props = {
   userId: string;
@@ -30,55 +21,32 @@ type Props = {
 
 const CalendarWrapper: FC<Props> = ({ userId }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { firstDayOfMonth, lastDayOfMonth } =
+    startAndEndOfCalendarMonth(selectedDate);
   const [isDaysOffOpen, setIsDaysOffOpen] = useState(false);
   const {
     data: schedules,
-    isLoading,
     refetch: refetchSchedules,
-  } = trpc.schedules.getMany.useQuery({ userId });
-  useOrganizationChange(refetchSchedules);
-  const { data: daysOff } = trpc.dayOff.getMany.useQuery({
-    startDate: startOfMonth(selectedDate),
-    endDate: endOfMonth(selectedDate),
+    isLoading,
+  } = trpc.schedules.getFormattedSchedule.useQuery({
+    userId: [userId],
+    startDate: firstDayOfMonth,
+    endDate: lastDayOfMonth,
   });
+  useOrganizationChange(refetchSchedules);
 
   const days = useMemo(
     () =>
-      generateMonth(selectedDate).map((day) => {
-        const filteredSchedules = schedules?.filter((schedule) => {
-          const foundDayOff = daysOff?.find(
-            (dayOff) =>
-              isSameDay(dayOff.date, day) && dayOff.userId === schedule.userId
-          );
-
-          if (foundDayOff?.type === dayOffTypes.workDay) return true;
-
-          return (
-            (schedule.type === scheduleTypes.customizable
-              ? schedule.days.includes(getDay(day))
-              : isIntervalSchedule({
-                  dateLeft: schedule.firstDayOff,
-                  dateRight: day,
-                  daysOff: schedule.daysOff,
-                  daysWorked: schedule.daysWorked,
-                })) && foundDayOff?.type !== dayOffTypes.dayOff
-          );
-        });
-        const events: { name: string; time: string }[] = [];
-
-        filteredSchedules?.forEach((schedule, idx) => {
-          events.push({
-            name: `Horário ${idx + 1}`,
-            time: `${schedule.beginning}-${schedule.end}`,
-          });
-        });
-
-        return {
-          time: day,
-          events,
-        };
-      }),
-    [selectedDate, schedules, daysOff]
+      schedules?.map((schedule) => ({
+        time: schedule.day,
+        events: schedule.employees
+          .filter((employee) => employee.isWorkDay)
+          .map((employee) => ({
+            name: employee.name,
+            time: (employee.times ?? []).join(" / ") || "N. Inf.",
+          })),
+      })) ?? [],
+    [schedules]
   );
 
   const dayEvents = days
@@ -88,7 +56,7 @@ const CalendarWrapper: FC<Props> = ({ userId }) => {
       icon: ClockIcon,
       iconBackground: "bg-primary-600",
       content: `Horário ${idx + 1}`,
-      date: item.time.split("-").join(" - "),
+      date: item.time,
     }));
 
   const goToNextMonth = () => {
