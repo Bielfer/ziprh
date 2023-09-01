@@ -9,7 +9,6 @@ import FormikSelect from "../formik-select";
 import FormikCheckbox from "../formik-checkboxes";
 import { dayAbbreviations } from "~/constants/dates";
 import Button from "~/components/button";
-import Container from "~/components/container";
 import { trpc } from "~/services/trpc";
 import { tryCatch } from "~/helpers/try-catch";
 import { useToast } from "~/components/toast";
@@ -196,134 +195,132 @@ const FormEmployeeSchedule: FC<Props> = ({ employeeId }) => {
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Container smallerContainer smallerContainerSize="max-w-xl">
-            <Form className="flex flex-col gap-y-5">
-              <Select
-                selected={type}
-                setSelected={(val) =>
-                  setType(val as (typeof scheduleTypesValues)[number])
-                }
-                label="Tipo de Escala"
-                name="type"
-                options={[
-                  { text: "Customizável", value: scheduleTypes.customizable },
-                  { text: "Intervalar", value: scheduleTypes.interval },
-                ]}
-              />
-              {type === scheduleTypes.customizable ? (
-                <FormikAdd
-                  name="employeeSchedules"
-                  render={({ remove, value }) => (
-                    <div className="flex flex-col">
-                      <label>Dias de Trabalho</label>
-                      {value?.map((item, idx) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-x-2 border-b py-7 lg:gap-x-5"
-                        >
-                          <div className="flex w-full flex-col items-center">
-                            <FormikCheckbox
-                              name={`employeeSchedules[${idx}].days`}
-                              className="mx-auto mb-1.5"
-                              textSide="bottom"
-                              options={dayAbbreviations.map((day, idx) => ({
-                                name: day,
-                                value: idx,
+          <Form className="flex flex-col gap-y-5">
+            <Select
+              selected={type}
+              setSelected={(val) =>
+                setType(val as (typeof scheduleTypesValues)[number])
+              }
+              label="Tipo de Escala"
+              name="type"
+              options={[
+                { text: "Customizável", value: scheduleTypes.customizable },
+                { text: "Intervalar", value: scheduleTypes.interval },
+              ]}
+            />
+            {type === scheduleTypes.customizable ? (
+              <FormikAdd
+                name="employeeSchedules"
+                render={({ remove, value }) => (
+                  <div className="flex flex-col">
+                    <label>Dias de Trabalho</label>
+                    {value?.map((item, idx) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-x-2 border-b py-7 lg:gap-x-5"
+                      >
+                        <div className="flex w-full flex-col items-center">
+                          <FormikCheckbox
+                            name={`employeeSchedules[${idx}].days`}
+                            className="mx-auto mb-1.5"
+                            textSide="bottom"
+                            options={dayAbbreviations.map((day, idx) => ({
+                              name: day,
+                              value: idx,
+                            }))}
+                          />
+                          <div className="grid w-full grid-cols-7 items-center lg:w-5/6">
+                            <FormikSelect
+                              className="col-span-3"
+                              name={`employeeSchedules[${idx}].beginning`}
+                              options={times.map((time) => ({
+                                text: time,
+                                value: time,
                               }))}
                             />
-                            <div className="grid w-full grid-cols-7 items-center lg:w-5/6">
-                              <FormikSelect
-                                className="col-span-3"
-                                name={`employeeSchedules[${idx}].beginning`}
-                                options={times.map((time) => ({
-                                  text: time,
-                                  value: time,
-                                }))}
-                              />
-                              <div className="mx-auto w-3 border-t border-gray-300" />
-                              <FormikSelect
-                                className="col-span-3"
-                                name={`employeeSchedules[${idx}].end`}
-                                options={times.map((time) => ({
-                                  text: time,
-                                  value: time,
-                                }))}
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            {value.length > 1 && (
-                              <IconButton
-                                icon={TrashIcon}
-                                variant="link-danger"
-                                size="sm"
-                                onClick={() => remove(idx)}
-                              />
-                            )}
+                            <div className="mx-auto w-3 border-t border-gray-300" />
+                            <FormikSelect
+                              className="col-span-3"
+                              name={`employeeSchedules[${idx}].end`}
+                              options={times.map((time) => ({
+                                text: time,
+                                value: time,
+                              }))}
+                            />
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                />
-              ) : (
-                <>
-                  <FormikDate
-                    className="w-full"
-                    label="Primeira Folga"
-                    hint={hints.required}
-                    name="firstDayOff"
-                    help="Essa deve ser a data na qual ocorrerá a primeira folga do funcionário"
-                  />
-                  <FormikNumber
-                    label="Dias de Trabalho"
-                    name="daysWorked"
-                    hint={hints.required}
-                    help="Quantos dias o funcionário trabalha antes de folgar?"
-                  />
-                  <FormikNumber
-                    label="Dias de Folga"
-                    name="daysOff"
-                    hint={hints.required}
-                    help="Quantos dias de folga o funcionário tem após trabalhar?"
-                  />
-                  <div className="grid w-full grid-cols-7">
-                    <FormikSelect
-                      hint={hints.required}
-                      label="Entrada"
-                      className="col-span-3"
-                      name="beginning"
-                      options={times.map((time) => ({
-                        text: time,
-                        value: time,
-                      }))}
-                    />
-                    <div />
-                    <FormikSelect
-                      hint={hints.required}
-                      label="Saída"
-                      className="col-span-3"
-                      name="end"
-                      options={times.map((time) => ({
-                        text: time,
-                        value: time,
-                      }))}
-                    />
+                        <div>
+                          {value.length > 1 && (
+                            <IconButton
+                              icon={TrashIcon}
+                              variant="link-danger"
+                              size="sm"
+                              onClick={() => remove(idx)}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </>
-              )}
-              <div className="flex justify-end pt-6">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmitting}
-                  loading={isSubmitting}
-                >
-                  Salvar
-                </Button>
-              </div>
-            </Form>
-          </Container>
+                )}
+              />
+            ) : (
+              <>
+                <FormikDate
+                  className="w-full"
+                  label="Primeira Folga"
+                  hint={hints.required}
+                  name="firstDayOff"
+                  help="Essa deve ser a data na qual ocorrerá a primeira folga do funcionário"
+                />
+                <FormikNumber
+                  label="Dias de Trabalho"
+                  name="daysWorked"
+                  hint={hints.required}
+                  help="Quantos dias o funcionário trabalha antes de folgar?"
+                />
+                <FormikNumber
+                  label="Dias de Folga"
+                  name="daysOff"
+                  hint={hints.required}
+                  help="Quantos dias de folga o funcionário tem após trabalhar?"
+                />
+                <div className="grid w-full grid-cols-7 gap-y-5 sm:gap-y-0">
+                  <FormikSelect
+                    hint={hints.required}
+                    label="Entrada"
+                    className="col-span-7 sm:col-span-3"
+                    name="beginning"
+                    options={times.map((time) => ({
+                      text: time,
+                      value: time,
+                    }))}
+                  />
+                  <div className="hidden sm:block" />
+                  <FormikSelect
+                    hint={hints.required}
+                    label="Saída"
+                    className="col-span-7 sm:col-span-3"
+                    name="end"
+                    options={times.map((time) => ({
+                      text: time,
+                      value: time,
+                    }))}
+                  />
+                </div>
+              </>
+            )}
+            <div className="flex justify-end pt-6">
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting}
+                loading={isSubmitting}
+              >
+                Salvar
+              </Button>
+            </div>
+          </Form>
         )}
       </Formik>
     </LoadingWrapper>

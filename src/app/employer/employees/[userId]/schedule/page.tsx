@@ -1,5 +1,4 @@
 import { type FC } from "react";
-import Container from "~/components/container";
 import FormEmployeeSchedule from "~/components/forms/employee-schedule";
 import TabsWrapper from "../tabs-wrapper";
 
@@ -34,9 +33,9 @@ const EmployerEmployeeByUserId: FC<Props> = ({ params, searchParams }) => {
         userId={userId}
         employeeName={employeeName ?? "Funcionário sem nome"}
       />
-      <Container smallerContainer>
+      <div className="mx-auto max-w-xl pb-12">
         <FormEmployeeSchedule employeeId={userId} />
-      </Container>
+      </div>
     </>
   );
 };
