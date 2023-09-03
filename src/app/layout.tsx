@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import Crisp from "./crisp";
 import { ptBrLocalization } from "~/constants/clerk";
+import GoogleTag from "./google-tag";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ const RootLayout: FC<Props> = ({ children }) => {
             type="image/png"
             sizes="any"
           />
+          <GoogleTag />
         </head>
         <body>
           <ClientProviders>{children}</ClientProviders>
