@@ -65,7 +65,10 @@ const CalendarWrapper: FC = () => {
   return (
     <>
       <LoadingWrapper className="py-10" isLoading={isLoading}>
-        {schedules && schedules.length > 0 ? (
+        {schedules &&
+        !schedules.every((item) =>
+          item.employees.every((employee) => employee.times?.length === 0)
+        ) ? (
           <CalendarMonthView
             date={selectedDate}
             days={days}
