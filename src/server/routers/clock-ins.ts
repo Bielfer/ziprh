@@ -3,7 +3,7 @@ import { tryCatch } from "~/helpers/try-catch";
 import { prisma } from "~/prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { isRole } from "../middlewares";
+import { hasOrganization, isRole } from "../middlewares";
 import { roles } from "~/constants/roles";
 import { type ClockIn } from "@prisma/client";
 import { differenceInMinutes, isSameDay } from "date-fns";
@@ -125,15 +125,10 @@ export const clockInsRouter = router({
     }),
   employeePunch: privateProcedure
     .use(isRole(roles.basicMember))
+    .use(hasOrganization)
     .mutation(async ({ ctx }) => {
       const { userId, orgId } = ctx.auth;
       const punchTime = new Date();
-
-      if (!orgId)
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No organization provided!",
-        });
 
       const [lastClockIn, errorSearching] = await tryCatch(
         prisma.clockIn.findFirst({
@@ -156,6 +151,7 @@ export const clockInsRouter = router({
 
       if (
         lastClockIn &&
+        isSameDay(punchTime, lastClockIn.punchTime) &&
         differenceInMinutes(punchTime, lastClockIn.punchTime) < 5
       )
         throw new TRPCError({
